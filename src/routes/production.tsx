@@ -177,6 +177,21 @@ function ProductionPage() {
               <span className="flex items-center gap-1.5"><span className="inline-block h-0.5 w-4 rounded" style={{ background: "oklch(0.52 0.15 235)" }} /> P-02</span>
               <span className="flex items-center gap-1.5"><span className="inline-block h-0.5 w-4 rounded" style={{ background: "oklch(0.52 0.16 158)" }} /> P-03</span>
             </div>
+            <div className="border-t border-border px-4 py-3 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+              Capacity alerts
+            </div>
+            <ul className="divide-y divide-border">
+              {[
+                { line: "P-01", tone: "warning" as const, msg: "MO-5515 running at 91% — throttle if sustained >4h" },
+                { line: "P-02", tone: "danger"  as const, msg: "MO-5521 rescheduled — material shortage EXC-1043" },
+                { line: "P-03", tone: "warning" as const, msg: "MO-5518 material low stock — DC-Semarang 890 units" },
+              ].map((a) => (
+                <li key={a.line} className="px-4 py-2.5 flex items-start gap-3">
+                  <Chip tone={a.tone} className="mt-0.5 shrink-0">{a.line}</Chip>
+                  <span className="text-xs text-foreground leading-relaxed">{a.msg}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
           {/* Material availability */}

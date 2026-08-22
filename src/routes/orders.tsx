@@ -160,33 +160,66 @@ function OrdersPage() {
         </div>
 
         <div className="grid gap-4 lg:grid-cols-[1fr_2fr]">
-          {/* Regional breakdown */}
-          <div className="panel overflow-hidden">
-            <div className="border-b border-border px-4 py-3 text-sm font-medium">By region</div>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-[11px] uppercase tracking-wider text-muted-foreground">
-                  <th className="px-4 py-2.5 text-left font-medium">Region</th>
-                  <th className="px-4 py-2.5 text-right font-medium">Orders</th>
-                  <th className="px-4 py-2.5 text-right font-medium">Units</th>
-                  <th className="px-4 py-2.5 text-right font-medium">At risk</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {REGION_SUMMARY.map((r) => (
-                  <tr key={r.region} className="hover:bg-surface-2/60 transition-colors">
-                    <td className="px-4 py-2.5">{r.region}</td>
-                    <td className="px-4 py-2.5 text-right num">{r.total}</td>
-                    <td className="px-4 py-2.5 text-right num text-muted-foreground">{formatNumber(r.units)}</td>
-                    <td className="px-4 py-2.5 text-right">
-                      {r.atRisk > 0
-                        ? <span className="num text-destructive font-medium">{r.atRisk}</span>
-                        : <span className="num text-muted-foreground">—</span>}
-                    </td>
+          {/* Left column: regional + SKU breakdown */}
+          <div className="flex flex-col gap-4">
+            <div className="panel overflow-hidden">
+              <div className="border-b border-border px-4 py-3 text-sm font-medium">By region</div>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-[11px] uppercase tracking-wider text-muted-foreground">
+                    <th className="px-4 py-2.5 text-left font-medium">Region</th>
+                    <th className="px-4 py-2.5 text-right font-medium">Orders</th>
+                    <th className="px-4 py-2.5 text-right font-medium">Units</th>
+                    <th className="px-4 py-2.5 text-right font-medium">At risk</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {REGION_SUMMARY.map((r) => (
+                    <tr key={r.region} className="hover:bg-surface-2/60 transition-colors">
+                      <td className="px-4 py-2.5">{r.region}</td>
+                      <td className="px-4 py-2.5 text-right num">{r.total}</td>
+                      <td className="px-4 py-2.5 text-right num text-muted-foreground">{formatNumber(r.units)}</td>
+                      <td className="px-4 py-2.5 text-right">
+                        {r.atRisk > 0
+                          ? <span className="num text-destructive font-medium">{r.atRisk}</span>
+                          : <span className="num text-muted-foreground">—</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="panel overflow-hidden">
+              <div className="border-b border-border px-4 py-3 text-sm font-medium">Top SKUs at risk</div>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-[11px] uppercase tracking-wider text-muted-foreground">
+                    <th className="px-4 py-2.5 text-left font-medium">SKU</th>
+                    <th className="px-4 py-2.5 text-right font-medium">At-risk orders</th>
+                    <th className="px-4 py-2.5 text-right font-medium">Units</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {[
+                    { sku: "RM-Steel-A1", atRisk: 2, units: 150_000 },
+                    { sku: "SKU-3391",    atRisk: 2, units: 5_300   },
+                    { sku: "SKU-1180",    atRisk: 2, units: 1_840   },
+                    { sku: "SKU-4421",    atRisk: 1, units: 3_600   },
+                    { sku: "SKU-9913",    atRisk: 0, units: 1_100   },
+                  ].map((r) => (
+                    <tr key={r.sku} className="hover:bg-surface-2/60 transition-colors">
+                      <td className="px-4 py-2.5 font-medium">{r.sku}</td>
+                      <td className="px-4 py-2.5 text-right">
+                        {r.atRisk > 0
+                          ? <span className="num text-destructive font-medium">{r.atRisk}</span>
+                          : <span className="num text-muted-foreground">—</span>}
+                      </td>
+                      <td className="px-4 py-2.5 text-right num text-muted-foreground">{formatNumber(r.units)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Full order table */}
