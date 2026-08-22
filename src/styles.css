@@ -6,7 +6,7 @@
 
 /*
  * Design system — "Linear-like" operations console.
- * Dark-first, near-black surfaces, hairline borders, indigo accent.
+ * Light theme, MIT Red (#A31F34) accent.
  * All colors in oklch. Never hardcode colors in components.
  */
 
@@ -56,52 +56,56 @@
 :root {
   --radius: 0.5rem;
 
-  --background: oklch(0.16 0.011 275);
-  --foreground: oklch(0.96 0.004 275);
-  --surface: oklch(0.19 0.012 275);
-  --surface-2: oklch(0.22 0.013 275);
-  --card: oklch(0.195 0.012 275);
-  --card-foreground: oklch(0.96 0.004 275);
-  --popover: oklch(0.21 0.013 275);
-  --popover-foreground: oklch(0.96 0.004 275);
+  /* Light surfaces */
+  --background:    oklch(0.975 0.003 60);
+  --foreground:    oklch(0.14  0.012 275);
+  --surface:       oklch(1     0     0);
+  --surface-2:     oklch(0.95  0.004 60);
+  --card:          oklch(1     0     0);
+  --card-foreground: oklch(0.14 0.012 275);
+  --popover:       oklch(1     0     0);
+  --popover-foreground: oklch(0.14 0.012 275);
 
-  --primary: oklch(0.58 0.163 279);
-  --primary-foreground: oklch(0.98 0.005 275);
-  --secondary: oklch(0.24 0.013 275);
-  --secondary-foreground: oklch(0.93 0.005 275);
-  --muted: oklch(0.24 0.012 275);
-  --muted-foreground: oklch(0.66 0.014 275);
-  --accent: oklch(0.26 0.02 279);
-  --accent-foreground: oklch(0.96 0.004 275);
+  /* MIT Red #A31F34 → oklch(0.42 0.175 15) */
+  --primary:          oklch(0.42 0.175 15);
+  --primary-foreground: oklch(1 0 0);
 
-  --destructive: oklch(0.62 0.2 22);
-  --destructive-foreground: oklch(0.98 0.005 275);
-  --success: oklch(0.68 0.15 158);
-  --success-foreground: oklch(0.16 0.011 275);
-  --warning: oklch(0.79 0.15 76);
-  --warning-foreground: oklch(0.16 0.011 275);
-  --info: oklch(0.7 0.12 235);
-  --info-foreground: oklch(0.16 0.011 275);
+  --secondary:          oklch(0.93 0.004 60);
+  --secondary-foreground: oklch(0.25 0.012 275);
+  --muted:              oklch(0.93 0.004 60);
+  --muted-foreground:   oklch(0.50 0.012 275);
+  --accent:             oklch(0.96 0.012 15);
+  --accent-foreground:  oklch(0.42 0.175 15);
 
-  --border: oklch(1 0 0 / 8%);
-  --border-strong: oklch(1 0 0 / 14%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.58 0.163 279);
+  --destructive:            oklch(0.52 0.22 22);
+  --destructive-foreground: oklch(1 0 0);
+  --success:                oklch(0.52 0.16 158);
+  --success-foreground:     oklch(1 0 0);
+  --warning:                oklch(0.60 0.16 76);
+  --warning-foreground:     oklch(1 0 0);
+  --info:                   oklch(0.52 0.15 235);
+  --info-foreground:        oklch(1 0 0);
 
-  --chart-1: oklch(0.58 0.163 279);
-  --chart-2: oklch(0.7 0.12 235);
-  --chart-3: oklch(0.68 0.15 158);
-  --chart-4: oklch(0.79 0.15 76);
-  --chart-5: oklch(0.62 0.2 22);
+  --border:       oklch(0 0 0 / 10%);
+  --border-strong: oklch(0 0 0 / 18%);
+  --input:        oklch(0 0 0 / 10%);
+  --ring:         oklch(0.42 0.175 15);
+
+  --chart-1: oklch(0.42 0.175 15);
+  --chart-2: oklch(0.52 0.15 235);
+  --chart-3: oklch(0.52 0.16 158);
+  --chart-4: oklch(0.60 0.16 76);
+  --chart-5: oklch(0.52 0.22 22);
 
   --gradient-hero: radial-gradient(
     120% 120% at 50% 0%,
-    color-mix(in oklab, var(--primary) 22%, transparent) 0%,
-    transparent 62%
+    color-mix(in oklab, var(--primary) 8%, transparent) 0%,
+    transparent 60%
   );
-  --shadow-panel: 0 1px 0 0 oklch(1 0 0 / 6%) inset, 0 16px 40px -24px oklch(0 0 0 / 70%);
-  --shadow-glow: 0 0 0 1px color-mix(in oklab, var(--primary) 40%, transparent),
-    0 12px 32px -12px color-mix(in oklab, var(--primary) 45%, transparent);
+  --shadow-panel: 0 1px 3px 0 oklch(0 0 0 / 7%),
+                  0 1px 0 0 oklch(0 0 0 / 4%);
+  --shadow-glow:  0 0 0 1px color-mix(in oklab, var(--primary) 30%, transparent),
+                  0 8px 24px -8px color-mix(in oklab, var(--primary) 30%, transparent);
 }
 
 @layer base {
@@ -110,7 +114,7 @@
   }
 
   html {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {
@@ -142,8 +146,8 @@
 
 @utility grid-lines {
   background-image:
-    linear-gradient(to right, oklch(1 0 0 / 3.5%) 1px, transparent 1px),
-    linear-gradient(to bottom, oklch(1 0 0 / 3.5%) 1px, transparent 1px);
+    linear-gradient(to right, oklch(0 0 0 / 4%) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0 0 0 / 4%) 1px, transparent 1px);
   background-size: 48px 48px;
 }
 
