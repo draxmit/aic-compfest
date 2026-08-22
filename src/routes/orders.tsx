@@ -18,30 +18,34 @@ export const Route = createFileRoute("/orders")({
 
 // 7-day order volume (units) with at-risk split
 const DAILY_VOLUME = [
-  { day: "16 Aug", total: 18400, atRisk: 2100 },
-  { day: "17 Aug", total: 21200, atRisk: 3400 },
-  { day: "18 Aug", total: 19600, atRisk: 1800 },
-  { day: "19 Aug", total: 23100, atRisk: 4200 },
-  { day: "20 Aug", total: 20800, atRisk: 3900 },
-  { day: "21 Aug", total: 24500, atRisk: 5600 },
-  { day: "22 Aug", total: 22350, atRisk: 8720 }, // today — spike from exc-1043
+  { day: "16 Aug", total: 24800, atRisk: 3100 },
+  { day: "17 Aug", total: 28600, atRisk: 4800 },
+  { day: "18 Aug", total: 26200, atRisk: 2600 },
+  { day: "19 Aug", total: 31400, atRisk: 5900 },
+  { day: "20 Aug", total: 28900, atRisk: 5200 },
+  { day: "21 Aug", total: 33800, atRisk: 7400 },
+  { day: "22 Aug", total: 31600, atRisk: 12100 }, // today — spike from exc-1043
 ];
 
 const REGION_SUMMARY = [
-  { region: "Jabodetabek", total: 4, atRisk: 2, units: 9500 },
-  { region: "Surabaya",    total: 3, atRisk: 2, units: 4540 },
-  { region: "Makassar",    total: 2, atRisk: 2, units: 1840 },
-  { region: "Bandung",     total: 2, atRisk: 0, units: 4200 },
-  { region: "Medan",       total: 2, atRisk: 0, units: 1370 },
-  { region: "Other",       total: 2, atRisk: 1, units: 1440 },
+  { region: "Jabodetabek", total: 7,  atRisk: 3, units: 18100 },
+  { region: "Surabaya",    total: 5,  atRisk: 3, units: 11440 },
+  { region: "Makassar",    total: 3,  atRisk: 2, units: 2820  },
+  { region: "Bandung",     total: 3,  atRisk: 0, units: 7100  },
+  { region: "Medan",       total: 3,  atRisk: 0, units: 4450  },
+  { region: "Bali",        total: 3,  atRisk: 0, units: 3360  },
+  { region: "Karawang",    total: 3,  atRisk: 2, units: 150000},
+  { region: "Semarang",    total: 2,  atRisk: 0, units: 2080  },
+  { region: "Other",       total: 6,  atRisk: 1, units: 7010  },
 ];
 
 // Promise date buckets
 const PROMISE_BUCKETS = [
-  { label: "Today (22 Aug)",   count: 2,  atRisk: 2, tone: "danger"  as const },
-  { label: "Tomorrow (23 Aug)",count: 3,  atRisk: 1, tone: "warning" as const },
-  { label: "Tue–Wed",          count: 5,  atRisk: 3, tone: "warning" as const },
-  { label: "Thu+",             count: 5,  atRisk: 1, tone: "success" as const },
+  { label: "Today (22 Aug)",   count: 2,  atRisk: 2,  tone: "danger"  as const },
+  { label: "Tomorrow (23 Aug)",count: 4,  atRisk: 2,  tone: "warning" as const },
+  { label: "24–25 Aug",        count: 9,  atRisk: 5,  tone: "warning" as const },
+  { label: "26–27 Aug",        count: 11, atRisk: 4,  tone: "warning" as const },
+  { label: "28 Aug+",          count: 9,  atRisk: 1,  tone: "success" as const },
 ];
 
 function OrdersPage() {

@@ -34,6 +34,13 @@ const MATERIAL_STATUS = [
   { mo: "MO-5522", sku: "SKU-2210", status: "Available",  note: "DC-Jakarta 15,900 units — sufficient" },
   { mo: "MO-5525", sku: "SKU-9913", status: "Available",  note: "DC-Bali 2,600 units — sufficient" },
   { mo: "MO-5530", sku: "SKU-7702", status: "Available",  note: "DC-Jakarta 18,400 units — sufficient" },
+  { mo: "MO-5533", sku: "SKU-6610", status: "Available",  note: "DC-Jakarta 9,400 units — sufficient" },
+  { mo: "MO-5536", sku: "SKU-8820", status: "Available",  note: "DC-Jakarta 22,000 units — sufficient" },
+  { mo: "MO-5539", sku: "SKU-1180", status: "Low stock",  note: "DC-Jakarta 1,200 units — below reorder point" },
+  { mo: "MO-5542", sku: "SKU-5512", status: "At risk",    note: "DC-Bali only 720 units — 1.2d cover" },
+  { mo: "MO-5545", sku: "SKU-3391", status: "Available",  note: "DC-Bandung 11,800 units — sufficient" },
+  { mo: "MO-5548", sku: "SKU-2210", status: "Available",  note: "DC-Surabaya 3,700 units — sufficient" },
+  { mo: "MO-5551", sku: "SKU-7702", status: "Available",  note: "DC-Bandung 5,100 units — sufficient" },
 ];
 
 const LINE_DEFS = ["P-01", "P-02", "P-03"] as const;

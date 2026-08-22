@@ -182,6 +182,163 @@ export const LANE_DETAIL: {
       [1.474,  124.842],  // Manado
     ],
   },
+  {
+    id: "SH-7769",
+    name: "Jakarta → Balikpapan",
+    color: "#16a34a",
+    weight: 2.5,
+    mode: "Sea",
+    carrier: "Garuda Cargo",
+    units: 720,
+    eta: "On time",
+    sla: "Express",
+    note: "Air freight via CGK→BPN. Clear skies, no delays.",
+    waypoints: [
+      [-6.208, 106.845],  // Jakarta
+      [-2.800, 111.000],  // Java Sea corridor
+      [-1.268, 116.828],  // Balikpapan
+    ],
+  },
+  {
+    id: "SH-7776",
+    name: "Surabaya → Lombok",
+    color: "#d97706",
+    weight: 2.5,
+    dashArray: "6 4",
+    mode: "Sea",
+    carrier: "Pelni Cargo",
+    units: 560,
+    eta: "+3h drift",
+    sla: "Standard",
+    note: "Lombok Strait crossing. Strong current reported.",
+    waypoints: [
+      [-7.248, 112.752],  // Surabaya
+      [-8.200, 114.400],  // Bali Strait
+      [-8.583, 116.117],  // Lombok (Mataram)
+    ],
+  },
+  {
+    id: "SH-7783",
+    name: "Jakarta → Pontianak",
+    color: "#16a34a",
+    weight: 2.5,
+    mode: "Sea",
+    carrier: "TIKI Express",
+    units: 890,
+    eta: "On time",
+    sla: "Standard",
+    note: "Karimata Strait route. Normal conditions.",
+    waypoints: [
+      [-6.208, 106.845],  // Jakarta
+      [-3.500, 108.000],  // Karimata Strait
+      [0.002,  109.343],  // Pontianak
+    ],
+  },
+  {
+    id: "SH-7790",
+    name: "Semarang → Surabaya",
+    color: "#16a34a",
+    weight: 2,
+    mode: "Road",
+    carrier: "JNE Trucking",
+    units: 1100,
+    eta: "On time",
+    sla: "Standard",
+    note: "Tol Trans-Jawa (Semarang–Surabaya). Normal traffic.",
+    waypoints: [
+      [-6.966, 110.421],  // Semarang
+      [-7.100, 111.800],  // Ngawi
+      [-7.248, 112.752],  // Surabaya
+    ],
+  },
+  {
+    id: "SH-7797",
+    name: "Bandung → Jakarta",
+    color: "#16a34a",
+    weight: 2,
+    mode: "Road",
+    carrier: "SiCepat",
+    units: 450,
+    eta: "On time",
+    sla: "Standard",
+    note: "Tol Cipularang. Normal conditions, ETA on schedule.",
+    waypoints: [
+      [-6.917, 107.619],  // Bandung
+      [-6.500, 107.200],  // Purwakarta
+      [-6.208, 106.845],  // Jakarta
+    ],
+  },
+  {
+    id: "SH-7804",
+    name: "Jakarta → Kupang",
+    color: "#dc2626",
+    weight: 3,
+    dashArray: "8 5",
+    mode: "Sea",
+    carrier: "Pelni Cargo",
+    units: 310,
+    eta: "+18h drift",
+    sla: "Critical",
+    note: "NTT route — Timor Sea swell Sev-2. Rerouting assessed.",
+    waypoints: [
+      [-6.208, 106.845],  // Jakarta
+      [-7.600, 112.000],  // Surabaya area
+      [-9.500, 118.000],  // Savu Sea
+      [-10.173, 123.607], // Kupang
+    ],
+  },
+  {
+    id: "SH-7811",
+    name: "Surabaya → Kupang",
+    color: "#d97706",
+    weight: 2.5,
+    dashArray: "6 4",
+    mode: "Sea",
+    carrier: "Pelni Cargo",
+    units: 280,
+    eta: "+6h drift",
+    sla: "Standard",
+    note: "Flores Sea–Savu Sea connection. Moderate delay.",
+    waypoints: [
+      [-7.248, 112.752],  // Surabaya
+      [-8.500, 117.500],  // Savu Sea
+      [-10.173, 123.607], // Kupang
+    ],
+  },
+  {
+    id: "SH-7818",
+    name: "Medan → Pekanbaru",
+    color: "#16a34a",
+    weight: 2,
+    mode: "Road",
+    carrier: "SiCepat",
+    units: 390,
+    eta: "On time",
+    sla: "Standard",
+    note: "Trans-Sumatera Highway. Normal conditions.",
+    waypoints: [
+      [3.595,  98.685],  // Medan
+      [1.500,  99.800],  // Kisaran area
+      [0.507, 101.448],  // Pekanbaru
+    ],
+  },
+  {
+    id: "SH-7823",
+    name: "Jakarta → Yogyakarta",
+    color: "#16a34a",
+    weight: 2,
+    mode: "Road",
+    carrier: "Wahana Express",
+    units: 680,
+    eta: "On time",
+    sla: "Standard",
+    note: "Tol Cipali–Solo–Yogya. ETA on schedule.",
+    waypoints: [
+      [-6.208, 106.845],  // Jakarta
+      [-6.966, 110.421],  // Semarang
+      [-7.797, 110.370],  // Yogyakarta
+    ],
+  },
 ];
 
 // City hubs with coordinates [lat, lng]
@@ -195,6 +352,12 @@ const HUBS: { key: string; name: string; coords: [number, number]; major: boolea
   { key: "makassar",    name: "Makassar",     coords: [-5.148, 119.432], major: true  },
   { key: "medan",       name: "Medan",        coords: [ 3.595,  98.685], major: true  },
   { key: "manado",      name: "Manado",       coords: [ 1.474, 124.842], major: false },
+  { key: "balikpapan", name: "Balikpapan",   coords: [-1.268, 116.828], major: false },
+  { key: "lombok",     name: "Lombok",       coords: [-8.583, 116.117], major: false },
+  { key: "pontianak",  name: "Pontianak",    coords: [ 0.002, 109.343], major: false },
+  { key: "yogyakarta", name: "Yogyakarta",   coords: [-7.797, 110.370], major: false },
+  { key: "kupang",     name: "Kupang",       coords: [-10.173,123.607], major: false },
+  { key: "pekanbaru",  name: "Pekanbaru",    coords: [ 0.507, 101.448], major: false },
 ];
 
 // ── Leaflet map (client-only) ────────────────────────────────────────────────
@@ -335,11 +498,18 @@ function LogisticsMap() {
 
 // ── Lane performance stats ───────────────────────────────────────────────────
 const LANE_STATS = [
-  { lane: "Semarang → Makassar", mode: "Sea", onTime30d: 0.72, avgDelay: "+5.4h", incidents: 4, risk: "High"   },
-  { lane: "Surabaya → Makassar", mode: "Sea", onTime30d: 0.89, avgDelay: "+1.2h", incidents: 1, risk: "Low"    },
-  { lane: "Jakarta → Surabaya",  mode: "Road",onTime30d: 0.93, avgDelay: "+0.9h", incidents: 0, risk: "Low"    },
-  { lane: "Jakarta → Denpasar",  mode: "Road",onTime30d: 0.87, avgDelay: "+1.8h", incidents: 2, risk: "Medium" },
-  { lane: "Makassar → Manado",   mode: "Sea", onTime30d: 0.79, avgDelay: "+3.1h", incidents: 3, risk: "Medium" },
+  { lane: "Semarang → Makassar",  mode: "Sea",  onTime30d: 0.72, avgDelay: "+5.4h", incidents: 4, risk: "High"   },
+  { lane: "Jakarta → Kupang",     mode: "Sea",  onTime30d: 0.68, avgDelay: "+9.2h", incidents: 5, risk: "High"   },
+  { lane: "Makassar → Manado",    mode: "Sea",  onTime30d: 0.79, avgDelay: "+3.1h", incidents: 3, risk: "Medium" },
+  { lane: "Surabaya → Lombok",    mode: "Sea",  onTime30d: 0.81, avgDelay: "+2.4h", incidents: 2, risk: "Medium" },
+  { lane: "Jakarta → Denpasar",   mode: "Road", onTime30d: 0.87, avgDelay: "+1.8h", incidents: 2, risk: "Medium" },
+  { lane: "Surabaya → Makassar",  mode: "Sea",  onTime30d: 0.89, avgDelay: "+1.2h", incidents: 1, risk: "Low"    },
+  { lane: "Jakarta → Pontianak",  mode: "Sea",  onTime30d: 0.91, avgDelay: "+1.0h", incidents: 1, risk: "Low"    },
+  { lane: "Jakarta → Surabaya",   mode: "Road", onTime30d: 0.93, avgDelay: "+0.9h", incidents: 0, risk: "Low"    },
+  { lane: "Semarang → Surabaya",  mode: "Road", onTime30d: 0.94, avgDelay: "+0.7h", incidents: 0, risk: "Low"    },
+  { lane: "Bandung → Jakarta",    mode: "Road", onTime30d: 0.95, avgDelay: "+0.5h", incidents: 0, risk: "Low"    },
+  { lane: "Medan → Pekanbaru",    mode: "Road", onTime30d: 0.88, avgDelay: "+1.3h", incidents: 1, risk: "Low"    },
+  { lane: "Jakarta → Yogyakarta", mode: "Road", onTime30d: 0.92, avgDelay: "+0.8h", incidents: 0, risk: "Low"    },
 ];
 
 function etaTone(eta: string): "danger" | "warning" | "success" {
