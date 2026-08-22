@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+.output/
+.vinxi/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# Environment secrets
+backend/.env
+.env
+.env.local
+.env.*.local
+
+# Dataset (large files — download separately per README)
+backend/data/raw/
+
+# Trained model artifacts (reproducible via train.py)
+backend/models/artifacts/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Temp
+*.tmp

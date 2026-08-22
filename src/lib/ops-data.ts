@@ -42,6 +42,13 @@ export interface OpsException {
   explanation: string[];
   actionPlan: ActionStep[];
   timeline: { t: string; baseline: number; projected: number }[];
+  /** Parameters forwarded to the ACM backend endpoint. */
+  acmMeta: {
+    affectedCustomers: number;
+    avgClvScore: number;
+    highClvCount: number;
+    delayHours: number;
+  };
 }
 
 export const EXCEPTION_TYPE_LABEL: Record<ExceptionType, string> = {
@@ -127,6 +134,7 @@ export const EXCEPTIONS: OpsException[] = [
       { id: "a4", label: "Raise shipment priority for JKT-01, JKT-04, SBY-02", system: "Logistics (simulated)", owner: "Logistics Lead" },
     ],
     timeline: mkTimeline(2600, [1, 0.62, 0.38, 0.7, 0.95, 1.02, 1]),
+    acmMeta: { affectedCustomers: 12400, avgClvScore: 0.61, highClvCount: 3100, delayHours: 36 },
   },
   {
     id: "exc-1043",
@@ -195,6 +203,7 @@ export const EXCEPTIONS: OpsException[] = [
       { id: "b3", label: "Open extra evening picking shift at DC-Jakarta", system: "Warehouse (simulated)", owner: "DC Supervisor" },
     ],
     timeline: mkTimeline(1200, [1, 2.1, 3.14, 2.6, 1.8, 1.3, 1.05]),
+    acmMeta: { affectedCustomers: 5800, avgClvScore: 0.55, highClvCount: 1450, delayHours: 0 },
   },
   {
     id: "exc-1044",
@@ -262,6 +271,7 @@ export const EXCEPTIONS: OpsException[] = [
       { id: "c2", label: "Update shipment priority and customer ETA notifications", system: "Orders (simulated)", owner: "Ops Analyst" },
     ],
     timeline: mkTimeline(900, [1, 1.05, 1.4, 1.65, 1.3, 1.08, 1]),
+    acmMeta: { affectedCustomers: 2150, avgClvScore: 0.58, highClvCount: 480, delayHours: 22 },
   },
 ];
 

@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, Check, X, FlaskConical, Sparkles, Info } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ArrowLeft, Check, X, FlaskConical, Sparkles, Info, Users, MessageSquare, Loader2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AppShell, Chip, SeverityDot } from "@/components/ops/AppShell";
 import { useOps } from "@/lib/ops-store";
@@ -12,6 +12,7 @@ import {
   formatTime,
   type OpsException,
 } from "@/lib/ops-data";
+import { api, type AcmResult, type AcmMessageResult, type ExplainResult } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/ai-operations/exceptions/$exceptionId")({
@@ -79,6 +80,15 @@ function ImpactCell({ label, value, tone }: { label: string; value: string; tone
   );
 }
 
+function GeminiSourceBadge({ source }: { source: "gemini" | "template" }) {
+  if (source !== "gemini") return null;
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+      <Sparkles className="size-2.5" /> Gemini Flash
+    </span>
+  );
+}
+
 function ExceptionDetailPage() {
   const { exceptionId } = Route.useParams();
   const { exceptions, decide, decisionFor } = useOps();
@@ -104,6 +114,57 @@ function Detail({
   const option = exception.options.find((o) => o.id === selected) ?? recommended;
   const baseline = useMemo(() => Math.max(...exception.options.map((o) => o.expectedLoss)), [exception]);
   const decided = Boolean(record);
+
+  // Gemini-powered explanation
+  const [explain, setExplain] = useState<ExplainResult | null>(null);
+  const [explainLoading, setExplainLoading] = useState(false);
+
+  // ACM state
+  const [acm, setAcm] = useState<AcmResult | null>(null);
+  const [acmMsg, setAcmMsg] = useState<AcmMessageResult | null>(null);
+  const [acmLoading, setAcmLoading] = useState(false);
+
+  useEffect(() => {
+    setExplainLoading(true);
+    api.explain({
+      exception_type: exception.type,
+      recommended_label: recommended.label,
+      recommended_loss_idr: recommended.expectedLoss,
+      baseline_loss_idr: baseline,
+      sla_risk: recommended.slaRisk,
+      lead_time_hours: recommended.leadTimeHours,
+      affected_orders: exception.impact.affectedOrders,
+      top_drivers: exception.explanation.slice(0, 2),
+    })
+      .then(setExplain)
+      .catch(() => null)
+      .finally(() => setExplainLoading(false));
+  }, [exception.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    setAcmLoading(true);
+    const { affectedCustomers, avgClvScore, highClvCount, delayHours } = exception.acmMeta;
+    api.acm({
+      sla_breach_prob: exception.impact.slaRisk,
+      affected_customers: affectedCustomers,
+      avg_clv_score: avgClvScore,
+      high_clv_count: highClvCount,
+      exception_type: exception.type,
+      delay_hours: delayHours,
+    })
+      .then((acmRes) => {
+        setAcm(acmRes);
+        return api.acmMessage({
+          exception_type: exception.type,
+          delay_hours: delayHours,
+          voucher_amount_idr: acmRes.voucher_amount_idr,
+          customer_segment: "High-CLV",
+        });
+      })
+      .then(setAcmMsg)
+      .catch(() => null)
+      .finally(() => setAcmLoading(false));
+  }, [exception.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const submit = (decision: "approved" | "rejected") => {
     const r = decide({ exception, optionId: selected, decision, note: note || undefined });
@@ -152,7 +213,7 @@ function Detail({
         </div>
       </Section>
 
-      <Section step="02" title="What will happen" subtitle="Impact prediction (LightGBM-style scoring on operational features)">
+      <Section step="02" title="What will happen" subtitle="Impact prediction (LightGBM scoring on Olist-derived operational features)">
         <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-5">
           <ImpactCell label="Affected orders" value={formatNumber(exception.impact.affectedOrders)} />
           <ImpactCell
@@ -199,7 +260,7 @@ function Detail({
         </div>
       </Section>
 
-      <Section step="03" title="What should we do" subtitle="Recovery optimization — minimize expected total cost and risk">
+      <Section step="03" title="What should we do" subtitle="Recovery optimization — OR-Tools CP-SAT minimizing expected total cost + SLA penalty">
         <div className="grid gap-3 md:grid-cols-3">
           {exception.options.map((o) => {
             const active = o.id === selected;
@@ -254,17 +315,26 @@ function Detail({
         </div>
 
         <div className="panel mt-3 p-4">
-          <div className="flex items-center gap-2 text-sm font-medium">
-            <Info className="size-4 text-primary" /> Why the AI recommends “{recommended.label}”
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <Info className="size-4 text-primary" /> Why the AI recommends "{recommended.label}"
+            </div>
+            {explain && <GeminiSourceBadge source={explain.source} />}
           </div>
-          <ul className="mt-2.5 space-y-1.5">
-            {exception.explanation.map((e) => (
-              <li key={e} className="flex gap-2 text-sm text-muted-foreground">
-                <span className="mt-1.5 inline-block size-1 shrink-0 rounded-full bg-primary" />
-                {e}
-              </li>
-            ))}
-          </ul>
+          {explainLoading ? (
+            <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+              <Loader2 className="size-3.5 animate-spin" /> Generating explanation…
+            </div>
+          ) : (
+            <ul className="mt-2.5 space-y-1.5">
+              {(explain?.bullets ?? exception.explanation).map((e, i) => (
+                <li key={i} className="flex gap-2 text-sm text-muted-foreground">
+                  <span className="mt-1.5 inline-block size-1 shrink-0 rounded-full bg-primary" />
+                  {e}
+                </li>
+              ))}
+            </ul>
+          )}
           <p className="num mt-3 text-xs text-muted-foreground">
             Objective: minimize expected total cost = expected SLA penalty + recovery spend, subject to capacity and
             lead-time constraints.
@@ -365,6 +435,86 @@ function Detail({
         <Link to="/ai-operations/history" className="mt-3 inline-block text-xs text-primary hover:underline">
           View action history →
         </Link>
+      </Section>
+
+      <Section
+        step="06"
+        title="Autonomous Commerce Mitigation"
+        subtitle="LightGBM churn scoring + dynamic pricing + Gemini-generated customer retention message"
+      >
+        {acmLoading ? (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="size-4 animate-spin" /> Running ACM pipeline…
+          </div>
+        ) : acm ? (
+          <div className="space-y-3">
+            <div className="grid gap-3 md:grid-cols-4">
+              <div className="panel p-4">
+                <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Churn risk</div>
+                <div className={cn("num mt-2 text-xl font-semibold",
+                  acm.churn_probability > 0.6 ? "text-destructive" : acm.churn_probability > 0.35 ? "text-warning" : "text-success")}>
+                  {formatPct(acm.churn_probability)}
+                </div>
+                <div className="mt-1 text-xs text-muted-foreground">{formatNumber(acm.customers_at_risk)} at risk</div>
+              </div>
+              <div className="panel p-4">
+                <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Voucher offer</div>
+                <div className="num mt-2 text-xl font-semibold text-primary">{formatRp(acm.voucher_amount_idr)}</div>
+                <div className="mt-1 text-xs text-muted-foreground">{acm.voucher_label}</div>
+              </div>
+              <div className="panel p-4">
+                <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">High-CLV prioritised</div>
+                <div className="num mt-2 text-xl font-semibold">{formatNumber(acm.high_clv_customers)}</div>
+                <div className="mt-1 text-xs text-muted-foreground">Net benefit {formatRp(acm.net_benefit_idr)}</div>
+              </div>
+              <div className="panel p-4">
+                <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Dynamic surcharge</div>
+                <div className="num mt-2 text-xl font-semibold">{acm.dynamic_pricing_uplift_pct.toFixed(2)}%</div>
+                <div className="mt-1 text-xs text-muted-foreground">logistics cost offset</div>
+              </div>
+            </div>
+
+            {acmMsg && (
+              <div className="panel p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <MessageSquare className="size-4 text-primary" />
+                    Customer retention message
+                  </div>
+                  <GeminiSourceBadge source={acmMsg.source} />
+                </div>
+                <div className="mt-3 rounded-md border border-border bg-surface-2/60 p-3">
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{acmMsg.message}</p>
+                </div>
+                <p className="num mt-2 text-xs text-muted-foreground">
+                  Ready to send via WhatsApp / email · voucher {formatRp(acmMsg.voucher_idr)} · language: {acmMsg.language}
+                </p>
+              </div>
+            )}
+
+            <div className="panel p-4">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Users className="size-4 text-primary" />
+                <span>Intervention cost vs. doing nothing</span>
+              </div>
+              <div className="num mt-1.5 grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <div className="text-xs text-muted-foreground">Voucher spend</div>
+                  <div className="font-semibold text-warning">{formatRp(acm.total_intervention_cost_idr)}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Churn cost if no action</div>
+                  <div className="font-semibold text-destructive">{formatRp(acm.churn_cost_without_action_idr)}</div>
+                </div>
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">{acm.recommended_action}</p>
+            </div>
+          </div>
+        ) : (
+          <div className="panel p-4 text-sm text-muted-foreground">
+            ACM pipeline unavailable — ensure the backend is running on port 8000.
+          </div>
+        )}
       </Section>
     </AppShell>
   );
