@@ -1,4 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import {
+  ComposableMap,
+  Geographies,
+  Geography,
+  Marker,
+  Line,
+} from "react-simple-maps";
 import { AppShell, PageHeader, Chip } from "@/components/ops/AppShell";
 import { SHIPMENTS, CARRIER_PERF, formatNumber, formatPct } from "@/lib/ops-data";
 
@@ -14,98 +21,76 @@ export const Route = createFileRoute("/logistics")({
   component: LogisticsPage,
 });
 
-const CITIES: Record<string, { x: number; y: number; label: string }> = {
-  jakarta:     { x: 192, y: 206, label: "Jakarta" },
-  bandung:     { x: 210, y: 225, label: "Bandung" },
-  semarang:    { x: 276, y: 196, label: "Semarang" },
-  surabaya:    { x: 340, y: 202, label: "Surabaya" },
-  denpasar:    { x: 390, y: 230, label: "Denpasar" },
-  banjarmasin: { x: 436, y: 156, label: "Banjarmasin" },
-  makassar:    { x: 520, y: 200, label: "Makassar" },
-  medan:       { x:  76, y:  80, label: "Medan" },
-  manado:      { x: 594, y: 112, label: "Manado" },
+// Real lon/lat coordinates for each hub
+const CITIES: Record<string, { coords: [number, number]; label: string; labelOffset?: [number, number] }> = {
+  jakarta:     { coords: [106.845, -6.208],  label: "Jakarta",     labelOffset: [-10, -10] },
+  bandung:     { coords: [107.619, -6.917],  label: "Bandung",     labelOffset: [6, 6] },
+  semarang:    { coords: [110.421, -6.966],  label: "Semarang",    labelOffset: [6, -10] },
+  surabaya:    { coords: [112.752, -7.248],  label: "Surabaya",    labelOffset: [6, -10] },
+  denpasar:    { coords: [115.212, -8.650],  label: "Denpasar",    labelOffset: [6, 4] },
+  banjarmasin: { coords: [114.591, -3.322],  label: "Banjarmasin", labelOffset: [6, -10] },
+  makassar:    { coords: [119.432, -5.148],  label: "Makassar",    labelOffset: [6, -10] },
+  medan:       { coords: [98.685,   3.595],  label: "Medan",       labelOffset: [6, -10] },
+  manado:      { coords: [124.842,  1.474],  label: "Manado",      labelOffset: [6, -10] },
 };
 
-const LANES = [
-  { id: "SH-7712", from: "semarang",  to: "makassar",    color: "#dc2626", dashArray: "8 4" },
-  { id: "SH-7718", from: "jakarta",   to: "denpasar",    color: "#16a34a", dashArray: "none" },
-  { id: "SH-7723", from: "surabaya",  to: "banjarmasin", color: "#d97706", dashArray: "6 3" },
-  { id: "SH-7731", from: "jakarta",   to: "medan",       color: "#16a34a", dashArray: "none" },
-  { id: "SH-7740", from: "surabaya",  to: "makassar",    color: "#16a34a", dashArray: "none" },
-  { id: "SH-7748", from: "bandung",   to: "semarang",    color: "#d97706", dashArray: "6 3" },
-  { id: "SH-7755", from: "jakarta",   to: "surabaya",    color: "#16a34a", dashArray: "none" },
-  { id: "SH-7762", from: "makassar",  to: "manado",      color: "#d97706", dashArray: "6 3" },
-];
+const LANE_COLORS: Record<string, { color: string; dasharray?: string }> = {
+  "SH-7712": { color: "#dc2626", dasharray: "6 3" }, // critical drift
+  "SH-7718": { color: "#16a34a" },                   // on time
+  "SH-7723": { color: "#d97706", dasharray: "5 3" }, // minor drift
+  "SH-7731": { color: "#16a34a" },
+  "SH-7740": { color: "#16a34a" },
+  "SH-7748": { color: "#d97706", dasharray: "5 3" },
+  "SH-7755": { color: "#16a34a" },
+  "SH-7762": { color: "#d97706", dasharray: "5 3" },
+};
 
-function IndonesiaIslands() {
-  return (
-    <g fill="oklch(0 0 0 / 6%)" stroke="oklch(0 0 0 / 14%)" strokeWidth="0.8">
-      <polygon points="58,55 84,40 112,48 148,62 174,86 180,118 168,148 150,170 128,182 106,174 86,154 68,132 50,100 48,72" />
-      <polygon points="166,192 198,188 242,184 290,183 340,185 384,192 414,202 416,216 388,224 346,218 298,215 248,213 202,218 172,215 162,206" />
-      <ellipse cx="400" cy="226" rx="14" ry="9" />
-      <ellipse cx="424" cy="230" rx="10" ry="8" />
-      <polygon points="296,80 340,60 400,52 460,58 510,72 532,98 538,132 526,160 504,178 474,184 440,178 408,164 376,148 346,134 318,118 298,102" />
-      <polygon points="530,92 550,78 566,82 574,100 580,124 568,148 554,164 540,172 524,168 514,152 516,132 528,116 534,104" />
-      <polygon points="554,148 572,152 590,162 602,178 596,192 578,188 562,174 550,160" />
-      <polygon points="536,130 548,120 566,112 582,108 592,118 582,132 564,138 548,140" />
-      <ellipse cx="650" cy="138" rx="12" ry="18" />
-      <polygon points="700,100 740,88 790,96 830,110 850,130 840,154 818,162 784,156 748,144 720,132 706,118" />
-      <polygon points="790,108 830,96 868,98 900,108 900,160 880,178 850,182 818,170 790,152 778,132" />
-      <ellipse cx="460" cy="248" rx="22" ry="8" />
-      <ellipse cx="500" cy="254" rx="16" ry="7" />
-      <ellipse cx="438" cy="244" rx="16" ry="7" />
-    </g>
-  );
-}
+// Map from shipment ID → from/to city keys
+const LANE_CITIES: Record<string, [string, string]> = {
+  "SH-7712": ["semarang",  "makassar"],
+  "SH-7718": ["jakarta",   "denpasar"],
+  "SH-7723": ["surabaya",  "banjarmasin"],
+  "SH-7731": ["jakarta",   "medan"],
+  "SH-7740": ["surabaya",  "makassar"],
+  "SH-7748": ["bandung",   "semarang"],
+  "SH-7755": ["jakarta",   "surabaya"],
+  "SH-7762": ["makassar",  "manado"],
+};
 
-function CurvedLane({ from, to, color, dashArray, id }: { from: string; to: string; color: string; dashArray: string; id: string }) {
-  const f = CITIES[from]!;
-  const t = CITIES[to]!;
-  const mx = (f.x + t.x) / 2;
-  const my = (f.y + t.y) / 2 - 28;
-  const d = `M ${f.x} ${f.y} Q ${mx} ${my} ${t.x} ${t.y}`;
-  const dashed = dashArray !== "none";
-  return (
-    <g>
-      <path d={d} fill="none" stroke={color} strokeWidth="6" strokeOpacity="0.15" strokeLinecap="round" />
-      <path d={d} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeDasharray={dashed ? dashArray : undefined}>
-        {dashed && <animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.4s" repeatCount="indefinite" />}
-      </path>
-      <text x={mx} y={my - 6} textAnchor="middle" fontSize="9" fill={color} fontFamily="Inter,sans-serif" fontWeight="600">{id}</text>
-    </g>
-  );
-}
+// world-atlas 50m — real Indonesia + SE Asia shapes
+const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json";
 
-const ACTIVE_CITIES = new Set(LANES.flatMap((l) => [l.from, l.to]));
-
-function CityDot({ city, highlight }: { city: { x: number; y: number; label: string }; highlight?: boolean }) {
-  return (
-    <g>
-      {highlight && <circle cx={city.x} cy={city.y} r="8" fill="oklch(0.42 0.175 15)" fillOpacity="0.15" />}
-      <circle cx={city.x} cy={city.y} r={highlight ? 4.5 : 3} fill={highlight ? "oklch(0.42 0.175 15)" : "oklch(0.45 0.01 275)"} stroke="white" strokeWidth="1.5" />
-      <text x={city.x} y={city.y - 8} textAnchor="middle" fontSize="9.5" fill="oklch(0.25 0.01 275)" fontFamily="Inter,sans-serif" fontWeight="500">{city.label}</text>
-    </g>
-  );
-}
+// SE Asia country IDs to show (Indonesia=360, Malaysia=458, Philippines=608,
+// Papua New Guinea=598, Timor-Leste=626, Singapore=702, Brunei=96,
+// Thailand=764, Vietnam=704, Cambodia=116)
+const SHOW_IDS = new Set(["360","458","608","598","626","702","96","764","704","116","104"]);
 
 function etaTone(eta: string): "danger" | "warning" | "success" {
   if (eta === "On time") return "success";
-  if (eta.includes("22h") || eta === "Critical") return "danger";
+  if (eta.startsWith("+22")) return "danger";
   return "warning";
 }
 
 function LogisticsPage() {
-  const drifting  = SHIPMENTS.filter((s) => s.eta !== "On time").length;
-  const onTime    = SHIPMENTS.filter((s) => s.eta === "On time").length;
-  const critical  = SHIPMENTS.filter((s) => s.sla === "Critical").length;
+  const drifting = SHIPMENTS.filter((s) => s.eta !== "On time").length;
+  const onTime   = SHIPMENTS.filter((s) => s.eta === "On time").length;
+  const critical = SHIPMENTS.filter((s) => s.sla === "Critical").length;
+
+  const activeCityKeys = new Set(
+    Object.entries(LANE_CITIES).flatMap(([, [a, b]]) => [a, b])
+  );
 
   return (
     <AppShell>
-      <PageHeader eyebrow="Logistics" title="Shipments" description="ETA drift signals feed the shipment delay detector. Active lanes and carrier performance below." />
+      <PageHeader
+        eyebrow="Logistics"
+        title="Shipments"
+        description="ETA drift signals feed the shipment delay detector. Active lanes and carrier performance below."
+      />
 
       <div className="px-6 py-6 md:px-8 space-y-4">
 
-        {/* Summary row */}
+        {/* Fleet KPI row */}
         <div className="grid gap-3 sm:grid-cols-4">
           <div className="panel p-4">
             <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Active shipments</div>
@@ -129,48 +114,132 @@ function LogisticsPage() {
           </div>
         </div>
 
-        {/* Map */}
+        {/* Real map */}
         <div className="panel overflow-hidden">
           <div className="border-b border-border px-4 py-3 flex items-center justify-between">
             <div className="text-sm font-medium">Indonesia Lane Map</div>
             <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
               <span className="flex items-center gap-1.5">
-                <span className="inline-block h-0.5 w-5 rounded bg-red-600" /> Critical · drifting
+                <span className="inline-block h-1 w-5 rounded bg-red-600" style={{ backgroundImage: "repeating-linear-gradient(to right, #dc2626 0,#dc2626 5px,transparent 5px,transparent 8px)" }} />
+                Critical · drifting
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="inline-block h-0.5 w-5 rounded bg-amber-600" style={{ backgroundImage: "repeating-linear-gradient(to right, #d97706 0,#d97706 4px,transparent 4px,transparent 7px)" }} /> Minor drift
+                <span className="inline-block h-1 w-5 rounded" style={{ backgroundImage: "repeating-linear-gradient(to right, #d97706 0,#d97706 4px,transparent 4px,transparent 7px)" }} />
+                Minor drift
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="inline-block h-0.5 w-5 rounded bg-green-600" /> On time
+                <span className="inline-block h-1 w-5 rounded bg-green-600" />
+                On time
               </span>
             </div>
           </div>
-          <div className="bg-[oklch(0.97_0.004_220)] p-2">
-            <svg viewBox="0 0 900 300" className="w-full" style={{ maxHeight: 300 }}>
-              <rect width="900" height="300" fill="oklch(0.88 0.04 220)" rx="4" />
-              <defs>
-                <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
-                  <path d="M 60 0 L 0 0 0 60" fill="none" stroke="oklch(0.7 0.04 220)" strokeWidth="0.4" />
-                </pattern>
-              </defs>
-              <rect width="900" height="300" fill="url(#grid)" />
-              <IndonesiaIslands />
-              {LANES.map((l) => <CurvedLane key={l.id} {...l} />)}
-              {Object.entries(CITIES).map(([key, city]) => (
-                <CityDot key={key} city={city} highlight={ACTIVE_CITIES.has(key)} />
-              ))}
-              <g transform="translate(858, 32)">
-                <circle r="14" fill="white" fillOpacity="0.7" />
-                <text textAnchor="middle" y="-4" fontSize="8" fill="#374151" fontWeight="700">N</text>
-                <path d="M0,-10 L2,2 L0,0 L-2,2 Z" fill="#374151" />
-              </g>
-              <g transform="translate(30, 278)">
-                <line x1="0" y1="0" x2="80" y2="0" stroke="oklch(0.4 0 0)" strokeWidth="1.5" />
-                <line x1="0" y1="-3" x2="0" y2="3" stroke="oklch(0.4 0 0)" strokeWidth="1.5" />
-                <line x1="80" y1="-3" x2="80" y2="3" stroke="oklch(0.4 0 0)" strokeWidth="1.5" />
-                <text x="40" y="-5" textAnchor="middle" fontSize="8" fill="oklch(0.4 0 0)">≈ 500 km</text>
-              </g>
-            </svg>
+
+          <div style={{ background: "oklch(0.91 0.04 220)" }}>
+            <ComposableMap
+              projection="geoMercator"
+              projectionConfig={{ center: [118, -4], scale: 1050 }}
+              width={900}
+              height={310}
+              style={{ width: "100%", height: "auto" }}
+            >
+              {/* Ocean fill is the background div colour */}
+
+              {/* Country shapes — Indonesia + SE Asia */}
+              <Geographies geography={GEO_URL}>
+                {({ geographies }) =>
+                  geographies
+                    .filter((geo) => SHOW_IDS.has(String(geo.id)))
+                    .map((geo) => (
+                      <Geography
+                        key={geo.rsmKey}
+                        geography={geo}
+                        style={{
+                          default: {
+                            fill: geo.id === 360 ? "oklch(0.96 0.006 90)" : "oklch(0.92 0.01 140)",
+                            stroke: "oklch(0.65 0.04 220)",
+                            strokeWidth: 0.5,
+                            outline: "none",
+                          },
+                          hover: { fill: "oklch(0.93 0.01 90)", outline: "none" },
+                          pressed: { outline: "none" },
+                        }}
+                      />
+                    ))
+                }
+              </Geographies>
+
+              {/* Shipment lanes */}
+              {Object.entries(LANE_CITIES).map(([id, [fromKey, toKey]]) => {
+                const from = CITIES[fromKey]!;
+                const to   = CITIES[toKey]!;
+                const style = LANE_COLORS[id]!;
+                return (
+                  <Line
+                    key={id}
+                    from={from.coords}
+                    to={to.coords}
+                    stroke={style.color}
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeDasharray={style.dasharray}
+                  />
+                );
+              })}
+
+              {/* Glow halos behind critical lane */}
+              {Object.entries(LANE_CITIES)
+                .filter(([id]) => LANE_COLORS[id]?.dasharray)
+                .map(([id, [fromKey, toKey]]) => {
+                  const from = CITIES[fromKey]!;
+                  const to   = CITIES[toKey]!;
+                  const style = LANE_COLORS[id]!;
+                  return (
+                    <Line
+                      key={`${id}-glow`}
+                      from={from.coords}
+                      to={to.coords}
+                      stroke={style.color}
+                      strokeWidth={6}
+                      strokeOpacity={0.15}
+                      strokeLinecap="round"
+                    />
+                  );
+                })}
+
+              {/* City markers */}
+              {Object.entries(CITIES).map(([key, city]) => {
+                const active = activeCityKeys.has(key);
+                const [lx, ly] = city.labelOffset ?? [6, -10];
+                return (
+                  <Marker key={key} coordinates={city.coords}>
+                    {active && (
+                      <circle
+                        r={8}
+                        fill="oklch(0.42 0.175 15)"
+                        fillOpacity={0.15}
+                      />
+                    )}
+                    <circle
+                      r={active ? 4.5 : 2.5}
+                      fill={active ? "oklch(0.42 0.175 15)" : "oklch(0.55 0.01 275)"}
+                      stroke="white"
+                      strokeWidth={1.5}
+                    />
+                    <text
+                      x={lx}
+                      y={ly}
+                      fontSize={9}
+                      fontFamily="Inter, sans-serif"
+                      fontWeight={active ? 600 : 400}
+                      fill="oklch(0.20 0.01 275)"
+                      style={{ pointerEvents: "none", userSelect: "none" }}
+                    >
+                      {city.label}
+                    </text>
+                  </Marker>
+                );
+              })}
+            </ComposableMap>
           </div>
         </div>
 
