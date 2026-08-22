@@ -471,6 +471,11 @@ function LogisticsPage() {
                     <td className="px-4 py-2.5 text-right num text-muted-foreground">{c.avgDelayH}h</td>
                   </tr>
                 ))}
+                <tr className="bg-surface-2/40 text-[11px] font-semibold">
+                  <td className="px-4 py-2.5 text-muted-foreground uppercase tracking-wider" colSpan={2}>Fleet average</td>
+                  <td className="px-4 py-2.5 text-right num text-success">86%</td>
+                  <td className="px-4 py-2.5 text-right num text-muted-foreground">2.5h</td>
+                </tr>
               </tbody>
             </table>
           </div>

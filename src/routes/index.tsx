@@ -209,20 +209,24 @@ function OverviewPage() {
                 <TrendingDown className="size-4 text-primary" /> Recent AI actions
               </div>
               {history.length === 0 ? (
-                <div className="px-4 py-4">
-                  <p className="text-xs text-muted-foreground">
-                    No decisions yet — open an exception to review the AI recommendation.
-                  </p>
-                  <div className="mt-3 space-y-1.5">
-                    <div className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">Prior session examples</div>
-                    {EXCEPTION_HISTORY.slice(0, 2).map((h) => (
-                      <div key={h.code} className="text-[11px] text-muted-foreground flex items-center justify-between">
-                        <span className="num">{h.code}</span>
-                        <span className="truncate mx-2">{h.option}</span>
-                        <span className="num text-success shrink-0">+{formatRp(h.lossAvoided)}</span>
-                      </div>
+                <div className="px-4 py-3">
+                  <div className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider mb-2">Last 30-day decisions</div>
+                  <ul className="divide-y divide-border -mx-4">
+                    {EXCEPTION_HISTORY.map((h) => (
+                      <li key={h.code} className="px-4 py-2.5 flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                            <span className="num">{h.code}</span>
+                            <span>·</span>
+                            <span>{EXCEPTION_TYPE_LABEL[h.type]}</span>
+                            {h.override && <Chip tone="warning" className="ml-1">AI override</Chip>}
+                          </div>
+                          <div className="mt-0.5 text-xs text-foreground truncate">{h.option}</div>
+                        </div>
+                        <span className="num text-xs text-success shrink-0">+{formatRp(h.lossAvoided)}</span>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
               ) : (
                 <ul className="divide-y divide-border">
