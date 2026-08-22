@@ -1,4 +1,4 @@
-const BASE = "http://localhost:8000";
+const BASE = (import.meta.env["VITE_API_URL"] as string | undefined) ?? "http://localhost:8000";
 
 async function post<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
@@ -44,7 +44,78 @@ export interface MarketSentimentResult {
   model: string | null;
 }
 
+export interface DetectResult {
+  anomaly_score: number;
+  z_score: number;
+  is_anomaly: boolean;
+  severity: "critical" | "high" | "medium";
+  confidence: number;
+  source: "model" | "demo_fallback";
+}
+
+export interface ImpactResult {
+  sla_breach_prob: number;
+  expected_loss_idr: number;
+  affected_orders: number;
+  source: "model" | "demo_fallback";
+}
+
+export interface OptimizeOption {
+  id: string;
+  label: string;
+  summary: string;
+  expected_loss_idr: number;
+  sla_risk: number;
+  lead_time_hours: number;
+  extra_cost_idr: number;
+  feasibility: number;
+  recommended: boolean;
+}
+
+export interface OptimizeResult {
+  options: OptimizeOption[];
+  objective: string;
+  solver: string;
+}
+
 export const api = {
+  detect: (body: {
+    exception_type: "supplier_delay" | "demand_spike" | "shipment_delay";
+    predicted_delay_hours?: number;
+    historical_mean_days?: number;
+    historical_std_days?: number;
+    supplier_reliability?: number;
+    order_count?: number;
+    rolling_mean?: number;
+    rolling_std?: number;
+    carrier_delay_days?: number;
+    item_count?: number;
+    order_value?: number;
+  }) => post<DetectResult>("/api/detect", body),
+
+  impact: (body: {
+    exception_type: "supplier_delay" | "demand_spike" | "shipment_delay";
+    delay_days: number;
+    carrier_delay_days: number;
+    item_count: number;
+    order_value: number;
+    purchase_hour: number;
+    purchase_dow: number;
+    purchase_month: number;
+    affected_orders: number;
+    scale_factor: number;
+  }) => post<ImpactResult>("/api/impact", body),
+
+  optimize: (body: {
+    exception_type: "supplier_delay" | "demand_spike" | "shipment_delay";
+    required_units: number;
+    baseline_loss: number;
+    sla_penalty_per_unit: number;
+    delay_hours: number;
+    inventory_cover_days: number;
+    affected_orders: number;
+  }) => post<OptimizeResult>("/api/optimize", body),
+
   explain: (body: {
     exception_type: string;
     recommended_label: string;

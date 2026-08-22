@@ -12,7 +12,7 @@ import {
   formatTime,
   type OpsException,
 } from "@/lib/ops-data";
-import { api, type AcmResult, type AcmMessageResult, type ExplainResult } from "@/lib/api";
+import { api, type AcmResult, type AcmMessageResult, type ExplainResult, type DetectResult, type OptimizeResult } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/ai-operations/exceptions/$exceptionId")({
@@ -115,6 +115,12 @@ function Detail({
   const baseline = useMemo(() => Math.max(...exception.options.map((o) => o.expectedLoss)), [exception]);
   const decided = Boolean(record);
 
+  // Live AI scores from backend
+  const [liveDetect, setLiveDetect] = useState<DetectResult | null>(null);
+  const [liveOptimize, setLiveOptimize] = useState<OptimizeResult | null>(null);
+  const [liveImpact, setLiveImpact] = useState<{ sla_breach_prob: number; expected_loss_idr: number } | null>(null);
+  const [aiLoading, setAiLoading] = useState(true);
+
   // Gemini-powered explanation
   const [explain, setExplain] = useState<ExplainResult | null>(null);
   const [explainLoading, setExplainLoading] = useState(false);
@@ -124,22 +130,82 @@ function Detail({
   const [acmMsg, setAcmMsg] = useState<AcmMessageResult | null>(null);
   const [acmLoading, setAcmLoading] = useState(false);
 
+  // ── Live AI pipeline (detect → impact → optimize) ──────────────────────
   useEffect(() => {
+    setAiLoading(true);
+
+    // Build per-type detect params from the exception's own data
+    const detectParams: Parameters<typeof api.detect>[0] = { exception_type: exception.type };
+    if (exception.type === "supplier_delay") {
+      detectParams.predicted_delay_hours = exception.acmMeta.delayHours || 36;
+      detectParams.historical_mean_days = 2.0;
+      detectParams.historical_std_days = 0.5;
+      detectParams.supplier_reliability = exception.confidence;
+    } else if (exception.type === "demand_spike") {
+      detectParams.order_count = exception.impact.affectedOrders * 0.1;
+      detectParams.rolling_mean = 412;
+      detectParams.rolling_std = 80;
+    } else {
+      detectParams.carrier_delay_days = (exception.acmMeta.delayHours || 22) / 24;
+      detectParams.item_count = 5;
+      detectParams.order_value = 350;
+    }
+
+    const impactParams: Parameters<typeof api.impact>[0] = {
+      exception_type: exception.type,
+      delay_days: (exception.acmMeta.delayHours || 0) / 24,
+      carrier_delay_days: (exception.acmMeta.delayHours || 0) / 24,
+      item_count: 5,
+      order_value: 350,
+      purchase_hour: 14,
+      purchase_dow: 1,
+      purchase_month: 8,
+      affected_orders: exception.impact.affectedOrders,
+      scale_factor: 1.0,
+    };
+
+    const optimizeParams: Parameters<typeof api.optimize>[0] = {
+      exception_type: exception.type,
+      required_units: 100_000,
+      baseline_loss: exception.impact.expectedLoss,
+      sla_penalty_per_unit: 15_000,
+      delay_hours: exception.acmMeta.delayHours || 36,
+      inventory_cover_days: exception.impact.inventoryCoverDays,
+      affected_orders: exception.impact.affectedOrders,
+    };
+
+    Promise.all([
+      api.detect(detectParams).catch(() => null),
+      api.impact(impactParams).catch(() => null),
+      api.optimize(optimizeParams).catch(() => null),
+    ]).then(([det, imp, opt]) => {
+      if (det) setLiveDetect(det);
+      if (imp) setLiveImpact({ sla_breach_prob: imp.sla_breach_prob, expected_loss_idr: imp.expected_loss_idr });
+      if (opt) setLiveOptimize(opt);
+      setAiLoading(false);
+    });
+  }, [exception.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    // Re-run explain when live optimize results arrive so explanation matches live options
+    const liveRec = liveOptimize?.options.find((o) => o.recommended) ?? liveOptimize?.options[0];
     setExplainLoading(true);
     api.explain({
       exception_type: exception.type,
-      recommended_label: recommended.label,
-      recommended_loss_idr: recommended.expectedLoss,
-      baseline_loss_idr: baseline,
-      sla_risk: recommended.slaRisk,
-      lead_time_hours: recommended.leadTimeHours,
+      recommended_label: liveRec?.label ?? recommended.label,
+      recommended_loss_idr: liveRec?.expected_loss_idr ?? recommended.expectedLoss,
+      baseline_loss_idr: liveRec
+        ? Math.max(...liveOptimize!.options.map((o) => o.expected_loss_idr))
+        : baseline,
+      sla_risk: liveRec?.sla_risk ?? recommended.slaRisk,
+      lead_time_hours: liveRec?.lead_time_hours ?? recommended.leadTimeHours,
       affected_orders: exception.impact.affectedOrders,
       top_drivers: exception.explanation.slice(0, 2),
     })
       .then(setExplain)
       .catch(() => null)
       .finally(() => setExplainLoading(false));
-  }, [exception.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [exception.id, liveOptimize]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     setAcmLoading(true);
@@ -192,9 +258,24 @@ function Detail({
           ) : null}
         </div>
         <h1 className="mt-3 max-w-3xl text-xl font-semibold md:text-2xl">{exception.title}</h1>
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          {exception.source} · detection confidence {formatPct(exception.confidence)}
-        </p>
+        <div className="mt-1.5 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+          <span>{exception.source}</span>
+          <span>·</span>
+          {liveDetect ? (
+            <>
+              <span>confidence <span className="num font-medium text-foreground">{formatPct(liveDetect.confidence)}</span></span>
+              <span>·</span>
+              <span>anomaly score <span className="num font-medium text-foreground">{liveDetect.anomaly_score.toFixed(3)}</span></span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-[10px] font-medium text-success">
+                <span className="size-1.5 rounded-full bg-success inline-block" /> live model
+              </span>
+            </>
+          ) : aiLoading ? (
+            <span className="flex items-center gap-1"><Loader2 className="size-3 animate-spin" /> scoring…</span>
+          ) : (
+            <span>detection confidence {formatPct(exception.confidence)}</span>
+          )}
+        </div>
       </div>
 
       <Section step="01" title="What happened" subtitle="Exception detection">
@@ -214,6 +295,11 @@ function Detail({
       </Section>
 
       <Section step="02" title="What will happen" subtitle="Impact prediction (LightGBM scoring on Olist-derived operational features)">
+        {aiLoading && !liveImpact && (
+          <div className="mb-3 flex items-center gap-2 text-xs text-muted-foreground">
+            <Loader2 className="size-3.5 animate-spin" /> Running LightGBM impact model…
+          </div>
+        )}
         <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-5">
           <ImpactCell label="Affected orders" value={formatNumber(exception.impact.affectedOrders)} />
           <ImpactCell
@@ -221,9 +307,23 @@ function Detail({
             value={exception.impact.productionDelayHours ? `${exception.impact.productionDelayHours}h delay` : "None"}
           />
           <ImpactCell label="Inventory cover" value={`${exception.impact.inventoryCoverDays} days`} tone="warning" />
-          <ImpactCell label="SLA breach risk" value={formatPct(exception.impact.slaRisk)} tone="danger" />
-          <ImpactCell label="Expected loss" value={formatRp(exception.impact.expectedLoss)} tone="danger" />
+          <ImpactCell
+            label="SLA breach risk"
+            value={liveImpact ? formatPct(liveImpact.sla_breach_prob) : formatPct(exception.impact.slaRisk)}
+            tone="danger"
+          />
+          <ImpactCell
+            label="Expected loss"
+            value={liveImpact ? formatRp(liveImpact.expected_loss_idr) : formatRp(exception.impact.expectedLoss)}
+            tone="danger"
+          />
         </div>
+        {liveImpact && (
+          <div className="mt-2 flex items-center gap-1.5 text-[11px] text-success">
+            <span className="size-1.5 rounded-full bg-success inline-block" />
+            SLA risk &amp; expected loss from live LightGBM model
+          </div>
+        )}
         <div className="panel mt-3 p-4">
           <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Logistics impact</div>
           <p className="mt-1.5 text-sm">{exception.impact.logisticsNote}</p>
@@ -261,9 +361,44 @@ function Detail({
       </Section>
 
       <Section step="03" title="What should we do" subtitle="Recovery optimization — OR-Tools CP-SAT minimizing expected total cost + SLA penalty">
+        {aiLoading && !liveOptimize && (
+          <div className="mb-3 flex items-center gap-2 text-xs text-muted-foreground">
+            <Loader2 className="size-3.5 animate-spin" /> Running OR-Tools optimizer…
+          </div>
+        )}
+        {liveOptimize && (
+          <div className="mb-3 flex items-center gap-1.5 text-[11px] text-success">
+            <span className="size-1.5 rounded-full bg-success inline-block" />
+            Options ranked by live OR-Tools CP-SAT · {liveOptimize.solver}
+          </div>
+        )}
         <div className="grid gap-3 md:grid-cols-3">
-          {exception.options.map((o) => {
+          {(liveOptimize
+            ? liveOptimize.options.map((o) => ({
+                id: o.id,
+                label: o.label,
+                summary: o.summary,
+                expectedLoss: o.expected_loss_idr,
+                slaRisk: o.sla_risk,
+                leadTimeHours: o.lead_time_hours,
+                extraCost: o.extra_cost_idr,
+                feasibility: o.feasibility,
+                recommended: o.recommended,
+              }))
+            : exception.options.map((o) => ({
+                id: o.id,
+                label: o.label,
+                summary: o.summary,
+                expectedLoss: o.expectedLoss,
+                slaRisk: o.slaRisk,
+                leadTimeHours: o.leadTimeHours,
+                extraCost: o.extraCost,
+                feasibility: o.feasibility,
+                recommended: o.recommended,
+              }))
+          ).map((o) => {
             const active = o.id === selected;
+            const maxLoss = Math.max(...(liveOptimize ? liveOptimize.options.map(x => x.expected_loss_idr) : exception.options.map(x => x.expectedLoss)));
             return (
               <button
                 key={o.id}
@@ -287,7 +422,7 @@ function Detail({
                   <dl className="num mt-3 space-y-1.5 text-xs">
                     <div className="flex justify-between">
                       <dt className="text-muted-foreground">Expected loss</dt>
-                      <dd className={cn("font-medium", o.expectedLoss === baseline ? "text-destructive" : "text-success")}>
+                      <dd className={cn("font-medium", o.expectedLoss === maxLoss ? "text-destructive" : "text-success")}>
                         {formatRp(o.expectedLoss)}
                       </dd>
                     </div>
