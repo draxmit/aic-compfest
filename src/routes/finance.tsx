@@ -29,10 +29,18 @@ export const Route = createFileRoute("/finance")({
 });
 
 const TYPE_BREAKDOWN = [
-  { type: "Supplier Delay",  lossAvoided: 285_000_000, spend: 34_000_000, count: 8 },
-  { type: "Demand Spike",    lossAvoided: 156_000_000, spend: 18_000_000, count: 6 },
-  { type: "Shipment Delay",  lossAvoided:  71_000_000, spend: 42_000_000, count: 4 },
+  { type: "Supplier Delay",       lossAvoided: 285_000_000, spend: 34_000_000, count: 8 },
+  { type: "Demand Spike",         lossAvoided: 156_000_000, spend: 18_000_000, count: 6 },
+  { type: "Shipment Delay",       lossAvoided:  71_000_000, spend: 42_000_000, count: 4 },
+  { type: "Inventory Shortage",   lossAvoided:  94_000_000, spend: 11_000_000, count: 3 },
+  { type: "Production Stoppage",  lossAvoided:  62_000_000, spend: 19_000_000, count: 2 },
+  { type: "Forecast Error",       lossAvoided:  44_000_000, spend:  8_000_000, count: 1 },
 ];
+const TYPE_TOTAL = {
+  count: TYPE_BREAKDOWN.reduce((s, r) => s + r.count, 0),
+  lossAvoided: TYPE_BREAKDOWN.reduce((s, r) => s + r.lossAvoided, 0),
+  spend: TYPE_BREAKDOWN.reduce((s, r) => s + r.spend, 0),
+};
 
 function Delta({ pct, inverse = false }: { pct: number; inverse?: boolean }) {
   const up = pct >= 0;
@@ -168,12 +176,24 @@ function FinancePage() {
                 ))}
                 <tr className="bg-surface-2/40 text-[11px] font-semibold">
                   <td className="px-4 py-2.5 text-muted-foreground uppercase tracking-wider">Total</td>
-                  <td className="px-4 py-2.5 text-right num">18</td>
-                  <td className="px-4 py-2.5 text-right num text-success">{formatRp(512_000_000)}</td>
-                  <td className="px-4 py-2.5 text-right num text-muted-foreground">{formatRp(94_000_000)}</td>
+                  <td className="px-4 py-2.5 text-right num">{TYPE_TOTAL.count}</td>
+                  <td className="px-4 py-2.5 text-right num text-success">{formatRp(TYPE_TOTAL.lossAvoided)}</td>
+                  <td className="px-4 py-2.5 text-right num text-muted-foreground">{formatRp(TYPE_TOTAL.spend)}</td>
                 </tr>
               </tbody>
             </table>
+            <div className="border-t border-border px-4 py-3 grid grid-cols-3 gap-2">
+              {[
+                { label: "Avg ROI per exception", value: `${Math.round(TYPE_TOTAL.lossAvoided / TYPE_TOTAL.spend)}×` },
+                { label: "Best category", value: "Supplier Delay" },
+                { label: "Avg spend / exception", value: formatRp(Math.round(TYPE_TOTAL.spend / TYPE_TOTAL.count)) },
+              ].map((s) => (
+                <div key={s.label} className="text-center">
+                  <div className="num text-sm font-semibold">{s.value}</div>
+                  <div className="text-[10px] text-muted-foreground mt-0.5">{s.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Resolved exception log */}
