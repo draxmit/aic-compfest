@@ -194,6 +194,33 @@ function FinancePage() {
                 </div>
               ))}
             </div>
+            <div className="border-t border-border px-4 py-3">
+              <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-3">ROI ratio by type (loss avoided ÷ spend)</div>
+              <div className="space-y-2.5">
+                {TYPE_BREAKDOWN.map((r) => {
+                  const roi = r.spend > 0 ? r.lossAvoided / r.spend : 0;
+                  const maxRoi = 10;
+                  const pct = Math.min((roi / maxRoi) * 100, 100);
+                  return (
+                    <div key={r.type}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs">{r.type}</span>
+                        <span className="num text-xs font-medium">{roi.toFixed(1)}×</span>
+                      </div>
+                      <div className="h-1.5 w-full rounded-full bg-border overflow-hidden">
+                        <div
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${pct}%`,
+                            background: roi >= 7 ? "var(--color-success)" : roi >= 4 ? "oklch(0.60 0.16 76)" : "var(--color-warning)",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           {/* Resolved exception log */}
