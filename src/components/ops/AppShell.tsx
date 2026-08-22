@@ -138,9 +138,11 @@ export function SeverityDot({ severity }: { severity: string }) {
 export function Chip({
   children,
   tone = "neutral",
+  className,
 }: {
   children: ReactNode;
   tone?: "neutral" | "danger" | "warning" | "success" | "primary";
+  className?: string;
 }) {
   return (
     <span
@@ -151,6 +153,7 @@ export function Chip({
         tone === "warning" && "border-warning/30 bg-warning/10 text-warning",
         tone === "success" && "border-success/30 bg-success/10 text-success",
         tone === "primary" && "border-primary/40 bg-primary/12 text-foreground",
+        className,
       )}
     >
       {children}
