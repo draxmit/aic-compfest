@@ -1,0 +1,468 @@
+% ===========================================================
+%  AEO — AI Exception Orchestrator
+%  Proposal Inovasi AI · COMPFEST 18
+%  Tim cupuu · BINUS University, Data Science
+% ===========================================================
+\documentclass[12pt,a4paper]{article}
+
+% --- Font: Times New Roman ---
+\usepackage{mathptmx}
+\usepackage{textcomp}
+
+% --- Layout: Word-like margins ---
+\usepackage[top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm]{geometry}
+
+% --- Spacing ---
+\usepackage{setspace}
+\onehalfspacing
+
+% --- Bahasa & encoding ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[bahasa]{babel}
+
+% --- Gambar & tabel ---
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+
+% --- Utilities ---
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{parskip}
+
+% --- Warna aksen ---
+\definecolor{accentgreen}{RGB}{14, 107, 82}
+\definecolor{darknavy}{RGB}{11, 25, 41}
+
+% --- Heading style: seragam dengan Word ---
+\titleformat{\section}
+  {\fontsize{13pt}{15pt}\selectfont\bfseries}
+  {\thesection.}{0.5em}{}
+\titleformat{\subsection}
+  {\fontsize{12pt}{14pt}\selectfont\bfseries}
+  {\thesubsection.}{0.5em}{}
+\titleformat{\subsubsection}
+  {\fontsize{12pt}{14pt}\selectfont\bfseries\itshape}
+  {\thesubsubsection.}{0.5em}{}
+
+\titlespacing{\section}{0pt}{18pt}{6pt}
+\titlespacing{\subsection}{0pt}{14pt}{4pt}
+\titlespacing{\subsubsection}{0pt}{10pt}{2pt}
+
+% --- Header/Footer ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{AEO — AI Exception Orchestrator}}
+\fancyhead[R]{\small\textit{COMPFEST 18 · Tim cupuu}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% --- Hyperlink style ---
+\hypersetup{
+  colorlinks=true,
+  linkcolor=darknavy,
+  urlcolor=accentgreen,
+  citecolor=darknavy
+}
+
+% --- Kolom tabel ---
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% ===========================================================
+\begin{document}
+
+% ---- COVER PAGE ----
+\begin{titlepage}
+  \centering
+  \vspace*{2cm}
+
+  {\large\bfseries PROPOSAL INOVASI AI\\[4pt]}
+  {\normalsize AI Innovation Challenge · COMPFEST 18\\[2pt]}
+  {\normalsize \textit{``AI for the Backbone of the Economy'' — Smart Commerce \& Smart Logistics}}
+
+  \vspace{1.5cm}
+  \rule{\linewidth}{1pt}
+  \vspace{0.5cm}
+
+  {\Huge\bfseries AEO}\\[6pt]
+  {\LARGE\bfseries AI Exception Orchestrator}\\[10pt]
+  {\large Sistem Manajemen Eksepsi Rantai Pasok Berbasis AI}
+
+  \vspace{0.5cm}
+  \rule{\linewidth}{1pt}
+  \vspace{2cm}
+
+  \begin{tabular}{ll}
+    \textbf{Nama Kelompok} & : cupuu \\[4pt]
+    \textbf{Institusi}     & : BINUS University, Program Studi Data Science \\[4pt]
+    \textbf{Anggota Tim}   & : Frederick Allensius \\
+                           & \phantom{: }Kang Nicholas Darren Nugroho \\
+                           & \phantom{: }Ivan William Lianata \\[4pt]
+    \textbf{Tahun}         & : 2024 \\
+  \end{tabular}
+
+  \vfill
+  {\small\textit{Proposal ini disusun untuk memenuhi persyaratan\\
+  AI Innovation Challenge COMPFEST 18}}
+\end{titlepage}
+
+% ---- TABLE OF CONTENTS ----
+\tableofcontents
+\newpage
+
+% ===========================================================
+\section{Latar Belakang}
+
+Industri \textit{e-commerce} Indonesia mengalami pertumbuhan yang signifikan — pada tahun 2023, nilai transaksi digital nasional melampaui USD 82 miliar dan diproyeksikan terus meningkat seiring penetrasi internet yang kian luas. Di balik angka pertumbuhan ini, \textbf{rantai pasok (\textit{supply chain})} menjadi infrastruktur yang paling rentan: setiap gangguan kecil pada pengiriman, ketersediaan stok, atau kinerja pemasok berdampak langsung pada pengalaman pelanggan dan kerugian finansial bisnis.
+
+Dalam operasional \textit{e-commerce} berskala besar, eksepsi rantai pasok — seperti lonjakan permintaan mendadak (\textit{demand spike}), keterlambatan pemasok (\textit{supplier delay}), dan gangguan pengiriman (\textit{shipment delay}) — terjadi hampir setiap hari. Namun penanganannya masih banyak dilakukan secara \textbf{manual}: operator memantau \textit{dashboard}, mengidentifikasi masalah, menegosiasikan solusi pemulihan, dan menginformasikan pelanggan — semua secara bertahap dan memakan waktu.
+
+Masalah ini diperparah oleh tiga kesenjangan utama:
+
+\begin{enumerate}
+  \item \textbf{Kesenjangan deteksi}: eksepsi baru diketahui setelah SLA dilanggar, bukan ketika pola anomali mulai terdeteksi.
+  \item \textbf{Kesenjangan kuantifikasi}: tidak ada cara cepat untuk memperkirakan dampak finansial (dalam Rupiah) dari setiap eksepsi sehingga prioritisasi dilakukan secara intuitif.
+  \item \textbf{Kesenjangan respons}: tidak ada sistem yang secara otomatis merekomendasikan aksi pemulihan terbaik beserta perkiraan biaya dan risikonya.
+\end{enumerate}
+
+Solusi yang ada saat ini bersifat reaktif, berbasis aturan statis, dan tidak mampu belajar dari pola historis. \textbf{AEO (AI Exception Orchestrator)} hadir untuk menutup ketiga kesenjangan ini melalui pipeline kecerdasan buatan empat tahap yang bekerja secara berurutan: mendeteksi anomali, mengkuantifikasi dampak, mengoptimalkan pemulihan, dan memitigasi risiko churn pelanggan — semuanya dalam hitungan detik dan tetap dengan manusia sebagai pemegang keputusan akhir.
+
+% ===========================================================
+\section{Tujuan dan Manfaat Pengembangan}
+
+\subsection{Tujuan Pengembangan}
+
+Pengembangan AEO bertujuan untuk:
+
+\begin{enumerate}
+  \item Membangun sistem deteksi anomali rantai pasok secara \textit{real-time} menggunakan \textit{ensemble} Isolation Forest yang mampu mengidentifikasi lonjakan permintaan, keterlambatan pemasok, dan gangguan pengiriman secara bersamaan dan independen.
+
+  \item Mengkuantifikasi dampak finansial dari setiap eksepsi menggunakan model prediktif berbasis LightGBM, memberikan estimasi kerugian dalam Rupiah agar operator dapat memprioritaskan penanganan berdasarkan data — bukan perkiraan.
+
+  \item Mengotomasi rekomendasi aksi pemulihan optimal menggunakan \textit{solver constraint programming} (OR-Tools CP-SAT dari Google), memastikan opsi yang direkomendasikan adalah solusi dengan total biaya minimum yang layak secara operasional.
+
+  \item Mengurangi risiko \textit{churn} pelanggan akibat keterlambatan melalui modul ACM (\textit{Autonomous Commerce Mitigation}) yang menggabungkan LightGBM \textit{churn prediction} dengan sistem voucher berbasis CLV (\textit{Customer Lifetime Value}) dan pesan WhatsApp personal berbahasa Indonesia berbantuan Gemini Flash 2.0.
+
+  \item Mempertahankan prinsip \textbf{Human-in-the-Loop (HITL)} pada setiap keputusan yang tidak dapat dibatalkan, sehingga AI berperan sebagai asisten cerdas — bukan pengganti operator.
+\end{enumerate}
+
+\subsection{Manfaat Pengembangan}
+
+\begin{table}[H]
+  \centering
+  \caption{Manfaat Pengembangan AEO}
+  \begin{tabularx}{\textwidth}{L{3.2cm} X}
+    \toprule
+    \textbf{Manfaat} & \textbf{Deskripsi} \\
+    \midrule
+    Respons lebih cepat & Deteksi otomatis mempersingkat waktu respons eksepsi dari hitungan jam menjadi detik, mengurangi dampak gangguan sebelum meluas. \\[4pt]
+    Prioritisasi berbasis data & Estimasi kerugian IDR per eksepsi memungkinkan operator memfokuskan perhatian pada gangguan dengan dampak finansial tertinggi. \\[4pt]
+    Retensi pelanggan & Voucher dan pesan personal yang tepat sasaran mengurangi risiko kehilangan pelanggan high-CLV akibat keterlambatan pengiriman. \\[4pt]
+    Keputusan yang aman & Prinsip HITL memastikan tidak ada perubahan sistem yang terjadi tanpa persetujuan manusia, meminimalkan risiko kesalahan AI. \\[4pt]
+    Pipeline terintegrasi & Satu API mengorkestrasikan empat model AI dalam satu alur kerja yang dapat dijalankan langsung dari Docker. \\[4pt]
+    Portabilitas & Dilatih pada dataset publik Olist Brasil yang merepresentasikan pola e-commerce universal; mudah disesuaikan dengan data operasional Indonesia. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+% ===========================================================
+\section{Metodologi}
+
+\subsection{Alur Memperoleh Dataset}
+
+Dataset yang digunakan adalah \textbf{Olist Brazilian E-Commerce Public Dataset} yang tersedia secara terbuka di Kaggle. Dataset ini mencakup \textbf{96.475 pesanan} dari tahun 2016 hingga 2018, meliputi data transaksi, informasi pengiriman, ulasan pelanggan, data penjual, dan detail produk — menjadikannya representasi e-commerce lintas kategori yang kaya fitur.
+
+Meskipun berasal dari Brasil, pola operasional e-commerce — distribusi keterlambatan pengiriman, perilaku pelanggan pasca-keterlambatan, dan profil risiko pemasok — bersifat universal dan dapat divalidasi sebagai \textit{proxy} untuk konteks Indonesia sebelum data operasional lokal tersedia.
+
+\subsubsection{Komposisi Dataset}
+
+Dataset terdiri dari delapan file CSV yang ditempatkan di direktori \texttt{backend/data/raw/olist/}:
+
+\begin{table}[H]
+  \centering
+  \caption{File Dataset Olist}
+  \begin{tabularx}{\textwidth}{L{7cm} X}
+    \toprule
+    \textbf{Nama File} & \textbf{Konten} \\
+    \midrule
+    \texttt{olist\_orders\_dataset.csv} & Data utama pesanan dengan timestamp dan status \\
+    \texttt{olist\_order\_items\_dataset.csv} & Item per pesanan dan ID penjual \\
+    \texttt{olist\_order\_payments\_dataset.csv} & Nilai pembayaran per pesanan \\
+    \texttt{olist\_order\_reviews\_dataset.csv} & Skor ulasan pelanggan \\
+    \texttt{olist\_customers\_dataset.csv} & Data pelanggan \\
+    \texttt{olist\_sellers\_dataset.csv} & Data penjual/pemasok \\
+    \texttt{olist\_products\_dataset.csv} & Kategori dan atribut produk \\
+    \texttt{product\_category\_name\_translation.csv} & Terjemahan kategori produk \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsubsection{Feature Engineering}
+
+Script \texttt{backend/data/pipeline.py} menghasilkan empat tabel fitur yang masing-masing dikonsumsi oleh model yang sesuai:
+
+\begin{table}[H]
+  \centering
+  \caption{Tabel Fitur Hasil Feature Engineering}
+  \begin{tabularx}{\textwidth}{L{4cm} L{3cm} X}
+    \toprule
+    \textbf{Fungsi Pipeline} & \textbf{Output} & \textbf{Fitur Utama} \\
+    \midrule
+    \texttt{build\_order\_features()} & Per-order features & \texttt{delay\_days}, \texttt{carrier\_delay\_days}, \texttt{sla\_breach}, \texttt{order\_value}, \texttt{purchase\_hour/dow/month}, \texttt{item\_count} \\[4pt]
+    \texttt{build\_demand\_timeseries()} & Daily velocity per produk & \texttt{order\_count}, \texttt{rolling\_mean\_7d}, \texttt{rolling\_std\_7d}, \texttt{z\_score} \\[4pt]
+    \texttt{build\_seller\_features()} & Per-seller reliability & \texttt{mean\_delay}, \texttt{std\_delay}, \texttt{late\_rate}, \texttt{reliability} (0--1) \\[4pt]
+    \texttt{build\_customer\_features()} & Per-customer CLV \& churn & \texttt{clv\_score}, \texttt{total\_spend}, \texttt{avg\_review}, \texttt{late\_deliveries}, \texttt{churn\_risk\_label} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{Alur Pengembangan Model (Per Fitur/Tahap)}
+
+AEO memiliki empat tahap AI yang bekerja secara berurutan membentuk satu pipeline inferensi. Setiap tahap menyelesaikan satu sub-masalah yang berbeda dan menghasilkan output yang menjadi input bagi tahap berikutnya.
+
+\begin{figure}[H]
+  \centering
+  \begin{tabular}{|c|c|c|c|}
+    \hline
+    \textbf{Tahap 1} & \textbf{Tahap 2} & \textbf{Tahap 3} & \textbf{Tahap 4} \\
+    \hline
+    Deteksi Anomali & Kuantifikasi Dampak & Optimasi Pemulihan & Mitigasi Pelanggan \\
+    \hline
+    Isolation Forest $\times$3 & LightGBM & OR-Tools CP-SAT & LightGBM + Gemini \\
+    \hline
+    anomaly\_score & sla\_breach\_prob & ranked options & voucher + WA msg \\
+    \hline
+  \end{tabular}
+  \caption{Pipeline Empat Tahap AEO}
+\end{figure}
+
+\subsubsection{Tahap 1: Deteksi Anomali (Isolation Forest)}
+
+Tahap pertama menggunakan \textit{ensemble} tiga Isolation Forest yang masing-masing dilatih pada sinyal yang berbeda:
+
+\begin{enumerate}
+  \item \textbf{DemandSpikeDetector}\\
+  Isolation Forest dengan 200 estimator dan \textit{contamination} 5\%, dilatih pada fitur \textit{rolling demand velocity} per produk: \texttt{order\_count}, \texttt{rolling\_mean\_7d}, \texttt{rolling\_std\_7d}, dan \texttt{z\_score}. Output berupa probabilitas anomali 0--1 yang diperoleh dari transformasi sigmoid terhadap \textit{decision function} Isolation Forest: $p = 1 / (1 + e^{s \cdot 3})$ di mana $s$ adalah \textit{raw decision score}.
+
+  \item \textbf{SupplierDelayDetector}\\
+  Model \textit{hybrid}: Isolation Forest pada \textit{seller history} (order\_count, mean\_delay, std\_delay, reliability) dikombinasikan dengan \textit{rule-based z-score} pada \textit{lead time}. Skor akhir merupakan rata-rata berbobot: $\text{score} = 0.5 \times \text{IF score} + 0.5 \times \text{rule score}$, memberikan tingkat interpretabilitas yang lebih tinggi dibanding Isolation Forest murni. \textit{Contamination} diset 10\% untuk mengakomodasi tingginya proporsi pemasok bermasalah.
+
+  \item \textbf{ShipmentDelayDetector}\\
+  Isolation Forest pada fitur level-order: \texttt{carrier\_delay\_days}, \texttt{item\_count}, \texttt{order\_value}. Model ini mendeteksi pengiriman yang secara statistik menyimpang dari baseline historis carrier — bukan sekadar pengiriman yang terlambat, tetapi anomali pola delay yang mengindikasikan masalah sistemik.
+\end{enumerate}
+
+Ketiga model disimpan sebagai file \texttt{.pkl} di \texttt{backend/models/artifacts/} menggunakan \texttt{joblib} dan dimuat secara \textit{lazy} saat pertama kali dipanggil.
+
+\subsubsection{Tahap 2: Kuantifikasi Dampak (LightGBM)}
+
+Dua model LightGBM dilatih secara terpisah untuk menjawab dua pertanyaan berbeda:
+
+\begin{table}[H]
+  \centering
+  \caption{Model Kuantifikasi Dampak}
+  \begin{tabularx}{\textwidth}{L{3.5cm} X X}
+    \toprule
+    \textbf{Model} & \textbf{SLABreachModel} & \textbf{ExpectedLossModel} \\
+    \midrule
+    Tugas & Binary classification & Regression \\
+    Objective & \texttt{binary} (AUC) & \texttt{regression\_l1} (MAE) \\
+    Training set & Semua order dengan label \texttt{sla\_breach} & Hanya order yang sudah breach SLA \\
+    Output & Probabilitas SLA breach [0--1] & Expected loss dalam IDR \\
+    Konversi IDR & -- & loss\_BRL $\times$ affected\_orders $\times$ 3.000 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Loss \textit{proxy} dihitung sebagai: $\text{loss} = \text{order\_value} \times \text{clip}(\text{delay\_days} \times 0.05,\ 0.5)$, artinya setiap hari keterlambatan menambah 5\% nilai pesanan sebagai potensi kompensasi/refund, dengan batas maksimum 50\%.
+
+Parameter LightGBM yang digunakan: \texttt{learning\_rate=0.05}, \texttt{num\_leaves=31}, \texttt{feature\_fraction=0.8}, \texttt{bagging\_fraction=0.8}, dengan \textit{early stopping} pada 30 ronde.
+
+\subsubsection{Tahap 3: Optimasi Pemulihan (OR-Tools CP-SAT)}
+
+Tahap ketiga menggunakan \textbf{Constraint Programming solver CP-SAT} dari Google OR-Tools untuk memilih satu aksi pemulihan optimal dari kumpulan kandidat yang telah didefinisikan untuk setiap jenis eksepsi.
+
+\textbf{Kandidat Pemulihan per Jenis Eksepsi:}
+
+\begin{table}[H]
+  \centering
+  \caption{Kandidat Aksi Pemulihan}
+  \begin{tabularx}{\textwidth}{L{3cm} L{3.5cm} X}
+    \toprule
+    \textbf{Jenis Eksepsi} & \textbf{Kandidat} & \textbf{Deskripsi Singkat} \\
+    \midrule
+    \multirow{3}{3cm}{Supplier Delay}
+      & Tunggu pemasok & Tidak ada intervensi; absorb keterlambatan \\
+      & Backup supplier & Pindah 100\% volume ke pemasok cadangan \\
+      & Split supply & 60\% pemasok lama, 40\% cadangan \\
+    \midrule
+    \multirow{3}{3cm}{Demand Spike}
+      & Do nothing & Layani \textit{first-come-first-served} \\
+      & Rebalance DC & Transfer stok dari \textit{distribution center} regional \\
+      & Cap listing & Batasi kuantitas pembelian per order \\
+    \midrule
+    \multirow{3}{3cm}{Shipment Delay}
+      & Hold \& wait & Pertahankan rute laut; notifikasi pelanggan \\
+      & Air-freight & Kirim subset kritis via udara \\
+      & Reroute & Alihkan via hub carrier alternatif \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\textbf{Formulasi Optimasi:}
+
+Setiap kandidat $i$ memiliki skor: $\text{score}_i = \lfloor \text{expected\_loss}_i / K \rfloor + \text{feasibility\_penalty}_i + \text{lead\_time\_penalty}_i$, di mana $K = 1000$ adalah faktor skala ke integer.
+
+Model CP-SAT meminimalkan: $\min \sum_{i} \text{score}_i \cdot x_i$, dengan \textit{constraint}: $\sum_i x_i = 1$ (exactly-one), $x_i = 0$ jika $\text{feasibility}_i < 0.3$, dan $x_i \in \{0, 1\}$.
+
+Solver dijalankan dengan batas waktu maksimum 1 detik (\texttt{max\_time\_in\_seconds=1.0}), menghasilkan solusi optimal global dalam waktu respons API yang dapat diterima.
+
+\subsubsection{Tahap 4: Autonomous Commerce Mitigation / ACM (LightGBM + Gemini Flash)}
+
+Modul ACM terdiri dari tiga komponen yang bekerja secara paralel:
+
+\begin{enumerate}
+  \item \textbf{ChurnPredictionModel (LightGBM)}\\
+  Binary classifier dilatih pada fitur pelanggan: \texttt{order\_count}, \texttt{total\_spend\_log}, \texttt{avg\_review}, \texttt{late\_deliveries}, \texttt{clv\_score}. Label churn dibuat sebagai \textit{proxy}: pelanggan berisiko churn jika rata-rata ulasan $< 3.5$ \textbf{atau} memiliki lebih dari satu pengiriman terlambat. Parameter: \texttt{num\_leaves=15}, \texttt{learning\_rate=0.05}, \texttt{early\_stopping=20}.
+
+  \item \textbf{CLV-Tiered Voucher System}\\
+  Sistem pemberian voucher kompensasi berdasarkan segmen CLV pelanggan:
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{lll}
+      \toprule
+      \textbf{Tier} & \textbf{CLV Score} & \textbf{Nominal Voucher} \\
+      \midrule
+      Premium Apology Voucher & $\geq 0.7$ & Rp 50.000 \\
+      Standard Apology Voucher & $\geq 0.4$ & Rp 25.000 \\
+      Courtesy Voucher & $< 0.4$ & Rp 10.000 \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  Net benefit dihitung: $\text{net\_benefit} = \max(0,\ \text{churn\_cost\_tanpa\_intervensi} - \text{intervention\_cost})$, di mana $\text{churn\_cost} = p_\text{sla} \times \text{affected\_customers} \times \text{avg\_order\_value} \times 0.3$.
+
+  \item \textbf{Gemini Flash 2.0 Integration}\\
+  Dua endpoint LLM disediakan:
+  \begin{itemize}
+    \item \texttt{/api/explain}: menghasilkan penjelasan 3-\textit{bullet} dalam Bahasa Inggris yang menjelaskan rekomendasi AI kepada operator.
+    \item \texttt{/api/acm/message}: menghasilkan pesan WhatsApp personal berbahasa Indonesia untuk pelanggan terdampak, menyertakan nomor voucher dan estimasi waktu penyelesaian.
+  \end{itemize}
+  Sistem mengimplementasikan \textit{graceful fallback}: jika Gemini API tidak tersedia, sistem menggunakan template terstruktur yang telah didefinisikan. API key bersifat opsional dan tersedia gratis pada tingkat penggunaan 1.500 \textit{request}/hari.
+\end{enumerate}
+
+\subsection{Alur Integrasi Model ke Environment Kode}
+
+\subsubsection{Arsitektur Sistem}
+
+AEO dibangun dalam arsitektur dua-tier:
+
+\begin{itemize}
+  \item \textbf{Backend}: FastAPI (Python 3.11), berjalan di port 8000, mengorkestrasikan seluruh model AI.
+  \item \textbf{Frontend}: React + Vite + TanStack Router + ShadCN, berjalan di port 3000, menyediakan antarmuka operator.
+\end{itemize}
+
+Komunikasi antara frontend dan backend menggunakan REST API dengan format JSON. Kedua layanan dikemas dalam \textit{container} Docker dan diorkestrasikan dengan Docker Compose.
+
+\subsubsection{Alur Integrasi Langkah demi Langkah}
+
+\begin{enumerate}
+  \item \textbf{Persiapan Data \& Training (one-time)}\\
+  Dataset Olist ditempatkan di \texttt{backend/data/raw/olist/}. Script \texttt{python models/train.py} menjalankan seluruh pipeline feature engineering menggunakan \texttt{pipeline.py}, kemudian melatih 6 model secara berurutan dalam waktu sekitar 60 detik. Setiap model disimpan sebagai file \texttt{.pkl} menggunakan \texttt{joblib} di direktori \texttt{models/artifacts/}.
+
+  \item \textbf{Inisialisasi Backend}\\
+  FastAPI memuat semua model ke memori saat \textit{startup} (\texttt{uvicorn main:app --reload --port 8000}). Setiap model memiliki metode \texttt{predict()} yang menerima \textit{dictionary} fitur dan mengembalikan hasil inferensi. Model menggunakan \textit{lazy loading}: jika file \texttt{.pkl} belum ada saat \texttt{predict()} dipanggil, model memuat otomatis dari \textit{disk}.
+
+  \item \textbf{Orkestrasi API Endpoint}\\
+  Endpoint \texttt{GET /api/exceptions/demo} mengorkestrasikan seluruh pipeline empat tahap untuk tiga skenario demo (supplier delay, demand spike, shipment delay). Frontend memanggil endpoint ini dan menampilkan antrian eksepsi yang sudah dianalisis lengkap dengan skor anomali, estimasi kerugian, dan opsi pemulihan terurut.
+
+  \item \textbf{Human-in-the-Loop Approval}\\
+  Operator melihat detail eksepsi beserta rekomendasi AI di halaman detail. Tombol ``Approve'' hanya mengubah status pesanan di \texttt{localStorage} (simulasi MVP — tidak ada integrasi ERP/WMS). Log keputusan tersimpan di halaman \textit{History} untuk keperluan audit.
+
+  \item \textbf{Deployment via Docker Compose}\\
+  Satu perintah \texttt{docker compose up --build} membangun dan menjalankan kedua layanan sekaligus. Frontend tersedia di \texttt{http://localhost:3000}, backend di \texttt{http://localhost:8000}, dan dokumentasi API interaktif (Swagger UI) di \texttt{http://localhost:8000/docs}.
+\end{enumerate}
+
+\subsubsection{Ringkasan Endpoint API}
+
+\begin{table}[H]
+  \centering
+  \caption{Endpoint API AEO}
+  \begin{tabularx}{\textwidth}{L{1.2cm} L{4.5cm} X}
+    \toprule
+    \textbf{Metode} & \textbf{Path} & \textbf{Fungsi} \\
+    \midrule
+    GET & \texttt{/health} & Status backend dan model \\
+    POST & \texttt{/api/detect} & Isolation Forest anomaly scoring \\
+    POST & \texttt{/api/impact} & LightGBM SLA breach + loss prediction \\
+    POST & \texttt{/api/optimize} & OR-Tools CP-SAT recovery options \\
+    POST & \texttt{/api/acm} & LightGBM churn score + voucher \\
+    POST & \texttt{/api/explain} & Gemini Flash: penjelasan rekomendasi AI \\
+    POST & \texttt{/api/acm/message} & Gemini Flash: pesan WhatsApp Indonesia \\
+    POST & \texttt{/api/market-sentiment} & Klasifikasi ruang lingkup gangguan \\
+    GET & \texttt{/api/exceptions/demo} & Full pipeline untuk 3 skenario demo \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+% ===========================================================
+\section{Metode Pendukung Pengambilan Keputusan}
+
+Selain empat tahap utama AI, AEO mengimplementasikan beberapa metode tambahan yang secara kolektif memperkuat kepercayaan operator terhadap rekomendasi sistem — sebuah aspek krusial dalam adopsi AI di lingkungan operasional kritis.
+
+\subsection{Explainability Layer (Penjelasan Rekomendasi AI)}
+
+Setiap rekomendasi AI dilengkapi penjelasan 3-\textit{bullet} berbahasa Inggris yang dihasilkan oleh Gemini Flash 2.0, menjelaskan: (a) mengapa opsi tersebut dipilih, (b) risiko utama yang mungkin terjadi, dan (c) pertimbangan yang harus diverifikasi operator. Pendekatan ini menerapkan prinsip \textbf{Explainable AI (XAI)} secara praktis: operator tidak perlu memahami teknik ML untuk mengambil keputusan yang terinformasi.
+
+\subsection{Dynamic Pricing Logic}
+
+Ketika SLA \textit{breach} terdeteksi, sistem menghitung \textit{dynamic pricing uplift} (0--2\%) pada produk \textit{ready-stock} untuk menutup kerugian logistik. Formula:
+$$\text{uplift\_pct} = \min\!\left(2.0,\ \frac{\text{delay\_hours} \times 50.000}{\text{affected\_customers} \times \text{avg\_order\_value}} \times 100\right)$$
+Ini memungkinkan operator membuat keputusan bisnis yang lebih holistik — tidak hanya menangani eksepsi, tetapi juga mengamankan margin.
+
+\subsection{Human-in-the-Loop (HITL) Governance}
+
+Prinsip HITL diterapkan secara konsisten di seluruh sistem: semua aksi pemulihan berstatus \textit{simulated} hingga operator secara eksplisit menyetujui melalui antarmuka. Tidak ada integrasi ERP atau WMS dalam MVP. Desain ini mencegah kesalahan AI yang berpotensi menyebabkan kerugian nyata sebelum sistem terbukti akurat di lapangan.
+
+\subsection{Severity Stratification}
+
+Setiap eksepsi mendapat skor \textit{severity} (Critical / High / Medium) berdasarkan kombinasi tiga sinyal: \texttt{anomaly\_score}, \texttt{sla\_breach\_prob}, dan \texttt{expected\_loss\_idr}. Stratifikasi ini memungkinkan antrian eksepsi diurutkan secara otomatis sehingga operator selalu menangani yang paling kritis terlebih dahulu, tanpa perlu melakukan \textit{triage} manual.
+
+\subsection{Decision History Log (Audit Trail)}
+
+Setiap keputusan operator dicatat dengan \textit{timestamp}, jenis eksepsi, opsi yang dipilih, operator yang bertanggung jawab, dan estimasi dampak sebelum/sesudah intervensi. Halaman \textit{History} menyediakan audit trail lengkap yang penting untuk: analisis \textit{post-mortem} insiden, pelatihan ulang model dengan data keputusan nyata, dan kepatuhan operasional internal.
+
+\subsection{Market Sentiment Classifier}
+
+Endpoint \texttt{/api/market-sentiment} mengklasifikasikan ruang lingkup gangguan (lokal/regional/nasional) berdasarkan jenis eksepsi dan skala dampaknya. Konteks pasar ini membantu operator menilai apakah gangguan bersifat terisolir atau bagian dari tren yang lebih luas — informasi yang relevan untuk keputusan \textit{procurement} jangka menengah.
+
+% ===========================================================
+\section{Kesimpulan}
+
+AEO (AI Exception Orchestrator) adalah solusi manajemen eksepsi rantai pasok yang dirancang untuk menjawab celah operasional nyata dalam industri e-commerce Indonesia. Sistem ini membuktikan bahwa AI dapat diterapkan tidak hanya untuk menganalisis data historis, tetapi untuk \textbf{mengorkestrasikan respons \textit{real-time}} terhadap gangguan operasional yang kompleks.
+
+Dengan pipeline empat tahap yang terintegrasi — deteksi anomali berbasis Isolation Forest, kuantifikasi dampak finansial melalui LightGBM, optimasi pemulihan menggunakan CP-SAT \textit{solver}, dan mitigasi pelanggan proaktif dengan LightGBM serta Gemini Flash 2.0 — AEO memberikan nilai tambah di setiap titik keputusan: dari identifikasi masalah awal hingga komunikasi pelanggan akhir.
+
+Yang membedakan AEO dari solusi pemantauan rantai pasok yang ada adalah \textbf{filosofi desainnya}: AI bukan pengganti manusia, melainkan \textit{amplifier} kapasitas operator. Setiap rekomendasi dapat dijelaskan, setiap keputusan memerlukan persetujuan manusia, dan setiap aksi dicatat untuk keperluan audit dan iterasi. Ini bukan sekadar fitur — ini adalah fondasi yang memungkinkan adopsi AI yang bertanggung jawab dalam lingkungan operasional kritis.
+
+Tim \textbf{cupuu dari BINUS University Data Science} meyakini bahwa inovasi ini memiliki potensi implementasi nyata di perusahaan logistik dan e-commerce Indonesia, sejalan dengan tema kompetisi \textit{``AI for the Backbone of the Economy''} — karena rantai pasok yang tangguh dan responsif adalah tulang punggung ekonomi digital yang dapat diandalkan.
+
+\bigskip
+\begin{flushright}
+  \textit{Jakarta, 2024}\\[8pt]
+  \textbf{Tim cupuu}\\
+  BINUS University, Data Science\\[6pt]
+  Frederick Allensius\\
+  Kang Nicholas Darren Nugroho\\
+  Ivan William Lianata
+\end{flushright}
+
+\end{document}
