@@ -13,7 +13,7 @@ from typing import Literal
 
 load_dotenv(Path(__file__).parent / ".env")
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, UploadFile, File, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -46,6 +46,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def add_no_cache_header(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    return response
 
 # Lazy-load models on first request
 _sla_model: SLABreachModel | None = None

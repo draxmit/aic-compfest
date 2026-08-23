@@ -48,7 +48,7 @@ const DATASETS = [
   },
 ] as const;
 
-const SAMPLE_BASE = (import.meta.env["VITE_API_URL"] as string | undefined) ?? "http://localhost:8000/api/";
+const BASE_URL = (import.meta.env['VITE_API_URL'] as string | undefined) ?? "http://localhost:8000";
 function DemoBanner() {
   return (
     <div className="mb-4 flex items-start gap-2 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-warning">
@@ -101,6 +101,11 @@ function UploadPage() {
     } finally {
       setBusy(null);
     }
+  };
+
+  const downloadSample = (datasetId: string) => {
+    toast.info(`Starting download for ${datasetId}.csv...`);
+    window.location.assign(`${BASE_URL}/api/sample/${datasetId}.csv`);
   };
 
   const uploadedCount = Object.keys(results).length;
@@ -182,15 +187,15 @@ function UploadPage() {
 
                     {/* Sample download */}
                     <div className="col-span-2 flex justify-end">
-                      <a
-                        href={`${SAMPLE_BASE}sample/${dataset.id}.csv`}
-                        download={`${dataset.id}.csv`}
-                        className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-surface-2 transition-colors"
+                      <button
+                        onClick={() => downloadSample(dataset.id)}
+                        className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-surface-2 transition-colors cursor-pointer"
                         title={`Download sample ${dataset.label} CSV`}
+                        type="button"
                       >
                         <Download className="size-3" />
                         Sample
-                      </a>
+                      </button>
                     </div>
                   </div>
 
