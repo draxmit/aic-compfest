@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { AppShell, PageHeader, Chip, SeverityDot } from "@/components/ops/AppShell";
+import { EmptyState, SkeletonLoader } from "@/components/ops/EmptyState";
 import { useOps } from "@/lib/ops-store";
 import {
   EXCEPTION_TYPE_LABEL,
@@ -40,7 +41,7 @@ const FILTERS: { id: "all" | ExceptionType; label: string }[] = [
 ];
 
 function AiOperationsPage() {
-  const { exceptions, decisionFor, openExceptions } = useOps();
+  const { exceptions, decisionFor, openExceptions, isEmpty, loading } = useOps();
   const [filter, setFilter] = useState<"all" | ExceptionType>("all");
   const list = exceptions.filter((e) => filter === "all" || e.type === filter);
   const exposure = openExceptions.reduce((s, e) => s + e.impact.expectedLoss, 0);
@@ -70,8 +71,16 @@ function AiOperationsPage() {
       />
 
       <div className="px-6 py-6 md:px-8">
-        <div className="panel overflow-hidden">
-          <div className="grid grid-cols-12 gap-3 border-b border-border px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+        {loading ? (
+          <SkeletonLoader />
+        ) : isEmpty ? (
+          <EmptyState 
+            title="No Exceptions Detected" 
+            message="Upload operational data first. When delays or risks are detected, the AI will generate actionable exceptions here." 
+          />
+        ) : (
+          <div className="panel overflow-hidden">
+            <div className="grid grid-cols-12 gap-3 border-b border-border px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
             <div className="col-span-6">Exception</div>
             <div className="col-span-2 text-right">Affected orders</div>
             <div className="col-span-2 text-right">SLA risk</div>
@@ -129,6 +138,7 @@ function AiOperationsPage() {
             })}
           </ul>
         </div>
+        )}
       </div>
     </AppShell>
   );

@@ -15,6 +15,7 @@ import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as LogisticsRouteImport } from './routes/logistics'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as ProductionRouteImport } from './routes/production'
+import { Route as UploadRouteImport } from './routes/upload'
 import { Route as AiOperationsIndexRouteImport } from './routes/ai-operations.index'
 import { Route as AiOperationsHistoryRouteImport } from './routes/ai-operations.history'
 import { Route as AiOperationsExceptionsExceptionIdRouteImport } from './routes/ai-operations.exceptions.$exceptionId'
@@ -49,6 +50,11 @@ const ProductionRoute = ProductionRouteImport.update({
   path: '/production',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UploadRoute = UploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AiOperationsIndexRoute = AiOperationsIndexRouteImport.update({
   id: '/ai-operations/',
   path: '/ai-operations/',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/logistics': typeof LogisticsRoute
   '/orders': typeof OrdersRoute
   '/production': typeof ProductionRoute
+  '/upload': typeof UploadRoute
   '/ai-operations/history': typeof AiOperationsHistoryRoute
   '/ai-operations/': typeof AiOperationsIndexRoute
   '/ai-operations/exceptions/$exceptionId': typeof AiOperationsExceptionsExceptionIdRoute
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/logistics': typeof LogisticsRoute
   '/orders': typeof OrdersRoute
   '/production': typeof ProductionRoute
+  '/upload': typeof UploadRoute
   '/ai-operations/history': typeof AiOperationsHistoryRoute
   '/ai-operations': typeof AiOperationsIndexRoute
   '/ai-operations/exceptions/$exceptionId': typeof AiOperationsExceptionsExceptionIdRoute
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/logistics': typeof LogisticsRoute
   '/orders': typeof OrdersRoute
   '/production': typeof ProductionRoute
+  '/upload': typeof UploadRoute
   '/ai-operations/history': typeof AiOperationsHistoryRoute
   '/ai-operations/': typeof AiOperationsIndexRoute
   '/ai-operations/exceptions/$exceptionId': typeof AiOperationsExceptionsExceptionIdRoute
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/logistics'
     | '/orders'
     | '/production'
+    | '/upload'
     | '/ai-operations/history'
     | '/ai-operations/'
     | '/ai-operations/exceptions/$exceptionId'
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/logistics'
     | '/orders'
     | '/production'
+    | '/upload'
     | '/ai-operations/history'
     | '/ai-operations'
     | '/ai-operations/exceptions/$exceptionId'
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/logistics'
     | '/orders'
     | '/production'
+    | '/upload'
     | '/ai-operations/history'
     | '/ai-operations/'
     | '/ai-operations/exceptions/$exceptionId'
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   LogisticsRoute: typeof LogisticsRoute
   OrdersRoute: typeof OrdersRoute
   ProductionRoute: typeof ProductionRoute
+  UploadRoute: typeof UploadRoute
   AiOperationsHistoryRoute: typeof AiOperationsHistoryRoute
   AiOperationsIndexRoute: typeof AiOperationsIndexRoute
   AiOperationsExceptionsExceptionIdRoute: typeof AiOperationsExceptionsExceptionIdRoute
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/upload': {
+      id: '/upload'
+      path: '/upload'
+      fullPath: '/upload'
+      preLoaderRoute: typeof UploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ai-operations/': {
       id: '/ai-operations/'
       path: '/ai-operations'
@@ -223,6 +243,7 @@ const rootRouteChildren: RootRouteChildren = {
   LogisticsRoute: LogisticsRoute,
   OrdersRoute: OrdersRoute,
   ProductionRoute: ProductionRoute,
+  UploadRoute: UploadRoute,
   AiOperationsHistoryRoute: AiOperationsHistoryRoute,
   AiOperationsIndexRoute: AiOperationsIndexRoute,
   AiOperationsExceptionsExceptionIdRoute:

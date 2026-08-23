@@ -232,8 +232,8 @@ function Detail({
       .finally(() => setAcmLoading(false));
   }, [exception.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const submit = (decision: "approved" | "rejected") => {
-    const r = decide({ exception, optionId: selected, decision, note: note || undefined });
+  const submit = async (decision: "approved" | "rejected") => {
+    const r = await decide({ exception, optionId: selected, decision, note: note || undefined });
     toast.success(
       decision === "approved"
         ? `Approved: ${r.optionLabel} · ${formatRp(r.lossAvoided)} estimated loss avoided`

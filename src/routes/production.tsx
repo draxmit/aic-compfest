@@ -4,6 +4,9 @@ import {
 } from "recharts";
 import { AppShell, PageHeader, Chip } from "@/components/ops/AppShell";
 import { PRODUCTION, INVENTORY, formatPct, formatNumber } from "@/lib/ops-data";
+import { api } from "@/lib/api";
+import { useApiData } from "@/hooks/use-api-data";
+import { EmptyState, SkeletonLoader } from "@/components/ops/EmptyState";
 
 export const Route = createFileRoute("/production")({
   head: () => ({
@@ -74,16 +77,18 @@ function materialTone(status: string): "success" | "warning" | "danger" {
 }
 
 function ProductionPage() {
+  const { data: production, loading, isEmpty } = useApiData(PRODUCTION, api.production);
+  
   const activeLines = LINE_DEFS.map((line) => {
-    const orders = PRODUCTION.filter((p) => p.line === line && p.status !== "Completed");
+    const orders = production.filter((p) => p.line === line && p.status !== "Completed");
     const avgLoad = orders.length ? orders.reduce((s, p) => s + p.load, 0) / orders.length : 0;
     const inProgress = orders.find((p) => p.status === "In Progress");
     return { line, avgLoad, orderCount: orders.length, currentSku: inProgress?.sku ?? "—" };
   });
 
-  const totalQty    = PRODUCTION.filter((p) => p.status !== "Completed").reduce((s, p) => s + p.qty, 0);
-  const rescheduled = PRODUCTION.filter((p) => p.status === "Rescheduling").length;
-  const inProgress  = PRODUCTION.filter((p) => p.status === "In Progress").length;
+  const totalQty    = production.filter((p) => p.status !== "Completed").reduce((s, p) => s + p.qty, 0);
+  const rescheduled = production.filter((p) => p.status === "Rescheduling").length;
+  const inProgress  = production.filter((p) => p.status === "In Progress").length;
   const materialAtRisk = MATERIAL_STATUS.filter((m) => m.status !== "Available").length;
 
   return (
@@ -94,7 +99,12 @@ function ProductionPage() {
         description="Capacity constraints feed the recovery optimizer. Rescheduled orders reflect approved AI recommendations."
       />
       <div className="px-6 py-6 md:px-8 space-y-4">
-
+        {loading ? (
+          <SkeletonLoader />
+        ) : isEmpty ? (
+          <EmptyState />
+        ) : (
+          <>
         {/* Line utilization cards */}
         <div className="grid gap-3 sm:grid-cols-3">
           {activeLines.map((l) => (
@@ -237,7 +247,7 @@ function ProductionPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {PRODUCTION.map((r) => {
+                {production.map((r) => {
                   const mat = MATERIAL_STATUS.find((m) => m.mo === r.mo);
                   return (
                     <tr key={r.mo} className="hover:bg-surface-2/60 transition-colors">
@@ -254,10 +264,12 @@ function ProductionPage() {
                     </tr>
                   );
                 })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </AppShell>
   );
