@@ -1,11 +1,31 @@
 const BASE = (import.meta.env["VITE_API_URL"] as string | undefined) ?? "http://localhost:8000";
 
+async function get<T>(path: string): Promise<T> {
+  const res = await fetch(`${BASE}${path}`);
+  if (!res.ok) throw new Error(`${path} → ${res.status}`);
+  return res.json() as Promise<T>;
+}
+
 async function post<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
+  if (!res.ok) throw new Error(`${path} → ${res.status}`);
+  return res.json() as Promise<T>;
+}
+
+async function del<T>(path: string): Promise<T> {
+  const res = await fetch(`${BASE}${path}`, { method: "DELETE" });
+  if (!res.ok) throw new Error(`${path} → ${res.status}`);
+  return res.json() as Promise<T>;
+}
+
+async function upload<T>(path: string, file: File): Promise<T> {
+  const body = new FormData();
+  body.append("file", file);
+  const res = await fetch(`${BASE}${path}`, { method: "POST", body });
   if (!res.ok) throw new Error(`${path} → ${res.status}`);
   return res.json() as Promise<T>;
 }
@@ -78,7 +98,102 @@ export interface OptimizeResult {
   solver: string;
 }
 
+export interface ApiActionRecord {
+  id: string;
+  exceptionId: string;
+  exceptionCode: string;
+  exceptionTitle: string;
+  optionId: string;
+  optionLabel: string;
+  recommendedOptionId: string;
+  decision: "approved" | "rejected";
+  note?: string | undefined;
+  expectedLoss: number;
+  baselineLoss: number;
+  lossAvoided: number;
+  timestamp: string;
+  status: "Executed (simulated)" | "Dismissed";
+}
+
+export interface UploadResult {
+  dataset_type: string;
+  rows_success: number;
+  rows_failed: number;
+  errors: { row: number; reason: string }[];
+}
+
+export interface OverviewResult {
+  active_exceptions: number;
+  open_exceptions: number;
+  approved_exceptions: number;
+  potential_loss_idr: number;
+  loss_avoided_idr: number;
+  worst_sla_risk: number;
+  total_affected_orders: number;
+  system_health: { name: string; status: string; detail: string }[];
+  recent_actions: {
+    id: string;
+    exceptionCode: string;
+    exceptionTitle: string;
+    optionLabel: string;
+    decision: string;
+    lossAvoided: number;
+    timestamp: string;
+  }[];
+  source: "live" | "demo";
+}
+
+export interface FinanceResult {
+  exposure_idr: number;
+  loss_avoided_idr: number;
+  recovery_spend_idr: number;
+  net_benefit_idr: number;
+  weekly_trend: { label: string; lossAvoided: number; recoveryCost: number }[];
+  action_breakdown: { type: string; count: number; lossAvoided: number; spend: number }[];
+  open_exception_count: number;
+  source: "live" | "demo";
+}
+
 export const api = {
+  orders: () => get<typeof import("./ops-data").ORDERS>("/api/orders"),
+
+  inventory: () => get<typeof import("./ops-data").INVENTORY>("/api/inventory"),
+
+  production: () => get<typeof import("./ops-data").PRODUCTION>("/api/production"),
+
+  shipments: () => get<typeof import("./ops-data").SHIPMENTS>("/api/shipments"),
+
+  suppliers: () => get<{ supplier: string; material: string; leadTimeDays: number; reliabilityPct: number; costPerUnitIdr: number }[]>("/api/suppliers"),
+
+  uploadDataset: (datasetType: "orders" | "inventory" | "production" | "shipments" | "suppliers", file: File) =>
+    upload<UploadResult>(`/api/uploads/${datasetType}`, file),
+
+  exceptions: () => get<import("./ops-data").OpsException[]>("/api/exceptions"),
+
+  exception: (id: string) => get<import("./ops-data").OpsException>(`/api/exceptions/${id}`),
+
+  detectExceptions: () =>
+    post<{
+      detected_count: number;
+      exception_ids: string[];
+      exceptions: import("./ops-data").OpsException[];
+      source: string;
+    }>("/api/exceptions/detect", {}),
+
+  actions: () => get<ApiActionRecord[]>("/api/actions"),
+
+  clearActions: () => del<{ cleared: boolean }>("/api/actions"),
+
+  approveException: (id: string, body: { option_id: string; note?: string | undefined }) =>
+    post<ApiActionRecord>(`/api/exceptions/${id}/approve`, body),
+
+  rejectException: (id: string, body: { option_id: string; note?: string | undefined }) =>
+    post<ApiActionRecord>(`/api/exceptions/${id}/reject`, body),
+
+  overview: () => get<OverviewResult>("/api/overview"),
+
+  finance: () => get<FinanceResult>("/api/finance"),
+
   detect: (body: {
     exception_type: "supplier_delay" | "demand_spike" | "shipment_delay";
     predicted_delay_hours?: number;

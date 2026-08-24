@@ -1,0 +1,13 @@
+id,lane,mode,eta,sla,carrier,units
+SH-7710,Jakarta → Surabaya,Road,On time,Standard,Wahana,1200
+SH-7711,Jakarta → Bandung,Road,On time,Standard,JNE,800
+SH-7712,Semarang → Makassar,Sea,Delayed +22h,Express,Meratus,480
+SH-7713,Semarang → Makassar,Sea,Delayed +22h,Standard,Meratus,320
+SH-7714,Surabaya → Makassar,Sea,Delayed +14h,Standard,Pelni,240
+SH-7715,Jakarta → Medan,Air,On time,Express,Garuda Cargo,150
+SH-7716,Karawang → Jakarta,Road,On time,Standard,Pos Logistics,5000
+SH-7717,Bandung → Jakarta,Road,On time,Standard,SiCepat,2000
+SH-7718,Jakarta → Bali,Sea,On time,Standard,TIKI,600
+SH-7719,Surabaya → Semarang,Road,On time,Standard,JNE,400
+SH-7720,Jakarta → Makassar,Sea,Delayed +18h,Standard,Meratus,180
+SH-7721,Surabaya → Makassar,Sea,Delayed +10h,Standard,Pelni,290

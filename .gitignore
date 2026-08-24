@@ -24,6 +24,9 @@ backend/.env
 .env.local
 .env.*.local
 
+# Database/Storage (Dynamic JSON files generated on runtime)
+backend/storage/
+
 # Dataset (large files — download separately per README)
 backend/data/raw/
 

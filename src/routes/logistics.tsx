@@ -2,7 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, type ReactNode } from "react";
 import { AppShell, PageHeader, Chip } from "@/components/ops/AppShell";
 import { SHIPMENTS, CARRIER_PERF, formatNumber, formatPct } from "@/lib/ops-data";
-
+import { api } from "@/lib/api";
+import { useApiData } from "@/hooks/use-api-data";
+import { WifiOff, Loader2 } from "lucide-react";
+import { EmptyState, SkeletonLoader } from "@/components/ops/EmptyState";
 export const Route = createFileRoute("/logistics")({
   head: () => ({
     meta: [
@@ -520,10 +523,11 @@ function etaTone(eta: string): "danger" | "warning" | "success" {
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 function LogisticsPage() {
-  const drifting = SHIPMENTS.filter((s) => s.eta !== "On time").length;
-  const onTime   = SHIPMENTS.filter((s) => s.eta === "On time").length;
-  const critical = SHIPMENTS.filter((s) => s.sla === "Critical").length;
-  const totalUnits = SHIPMENTS.reduce((s, r) => s + r.units, 0);
+  const { data: shipments, loading, isEmpty } = useApiData(SHIPMENTS, api.shipments);
+  const drifting = shipments.filter((s) => s.eta !== "On time").length;
+  const onTime   = shipments.filter((s) => s.eta === "On time").length;
+  const critical = shipments.filter((s) => s.sla === "Critical").length;
+  const totalUnits = shipments.reduce((s, r) => s + r.units, 0);
 
   return (
     <AppShell>
@@ -535,158 +539,158 @@ function LogisticsPage() {
 
       <div className="px-6 py-6 md:px-8 space-y-4">
 
-        {/* Fleet KPI row */}
-        <div className="grid gap-3 sm:grid-cols-4">
-          <div className="panel p-4">
-            <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Active shipments</div>
-            <div className="num mt-2 text-2xl font-semibold">{SHIPMENTS.length}</div>
-            <div className="mt-1 text-xs text-muted-foreground">{formatNumber(totalUnits)} units in transit</div>
-          </div>
-          <div className="panel p-4">
-            <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">On time</div>
-            <div className="num mt-2 text-2xl font-semibold text-success">{onTime}</div>
-            <div className="mt-1"><Chip tone="success">{Math.round((onTime / SHIPMENTS.length) * 100)}% fleet</Chip></div>
-          </div>
-          <div className="panel p-4">
-            <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">ETA drifting</div>
-            <div className="num mt-2 text-2xl font-semibold text-warning">{drifting}</div>
-            <div className="mt-1"><Chip tone="warning">{drifting} with delay</Chip></div>
-          </div>
-          <div className="panel p-4">
-            <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">SLA critical</div>
-            <div className="num mt-2 text-2xl font-semibold text-destructive">{critical}</div>
-            <div className="mt-1"><Chip tone={critical > 0 ? "danger" : "success"}>{critical > 0 ? "Needs action" : "None"}</Chip></div>
-          </div>
-        </div>
-
-        {/* Interactive Leaflet map */}
-        <div className="panel overflow-hidden">
-          <div className="border-b border-border px-4 py-3 text-sm font-medium flex items-center justify-between">
-            <span>Indonesia Shipment Routes</span>
-            <span className="text-[11px] text-muted-foreground">OSM · Zoom & pan · Click route for details</span>
-          </div>
-          <ClientOnly fallback={
-            <div style={{ height: 440 }} className="flex items-center justify-center text-sm text-muted-foreground bg-surface-2">
-              Loading map…
+        {loading ? (
+          <SkeletonLoader />
+        ) : isEmpty ? (
+          <EmptyState />
+        ) : (
+          <>
+            {/* KPI row */}
+            <div className="grid gap-3 sm:grid-cols-4">
+              {[
+                { label: "Critical SLA", value: critical, tone: "danger" as const },
+                { label: "ETA Drifting", value: drifting, tone: "warning" as const },
+                { label: "On Time",      value: onTime,   tone: "success" as const },
+                { label: "Total Units",  value: formatNumber(totalUnits), tone: "neutral" as const },
+              ].map((s) => (
+                <div key={s.label} className="panel p-4">
+                  <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{s.label}</div>
+                  <div className="mt-2 text-2xl font-semibold num">{s.value}</div>
+                  <div className="mt-1"><Chip tone={s.tone}>{s.label}</Chip></div>
+                </div>
+              ))}
             </div>
-          }>
-            <LogisticsMap />
-          </ClientOnly>
-        </div>
 
-        <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
+            {/* Interactive Leaflet map */}
+            <div className="panel overflow-hidden">
+              <div className="border-b border-border px-4 py-3 text-sm font-medium flex items-center justify-between">
+                <span>Indonesia Shipment Routes</span>
+                <span className="text-[11px] text-muted-foreground">OSM · Zoom & pan · Click route for details</span>
+              </div>
+              <ClientOnly fallback={
+                <div style={{ height: 440 }} className="flex items-center justify-center text-sm text-muted-foreground bg-surface-2">
+                  Loading map…
+                </div>
+              }>
+                <LogisticsMap />
+              </ClientOnly>
+            </div>
 
-          {/* Lane reliability (30d) */}
-          <div className="panel overflow-hidden">
-            <div className="border-b border-border px-4 py-3 text-sm font-medium">Lane reliability (30d)</div>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-[11px] uppercase tracking-wider text-muted-foreground">
-                  <th className="px-4 py-2.5 text-left font-medium">Lane</th>
-                  <th className="px-4 py-2.5 text-right font-medium">On time</th>
-                  <th className="px-4 py-2.5 text-right font-medium">Avg delay</th>
-                  <th className="px-4 py-2.5 text-left font-medium">Risk</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {LANE_STATS.map((r) => (
-                  <tr key={r.lane} className="hover:bg-surface-2/60 transition-colors">
-                    <td className="px-4 py-2.5">
-                      <div className="font-medium text-xs">{r.lane}</div>
-                      <div className="text-[11px] text-muted-foreground">{r.mode} · {r.incidents} incidents</div>
-                    </td>
-                    <td className="px-4 py-2.5 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <div className="h-1.5 w-14 rounded-full bg-border overflow-hidden">
-                          <div className="h-full rounded-full" style={{ width: `${r.onTime30d * 100}%`, background: r.onTime30d >= 0.9 ? "var(--color-success)" : r.onTime30d >= 0.8 ? "var(--color-warning)" : "var(--color-destructive)" }} />
-                        </div>
-                        <span className="num text-xs">{Math.round(r.onTime30d * 100)}%</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-2.5 text-right num text-muted-foreground text-xs">{r.avgDelay}</td>
-                    <td className="px-4 py-2.5">
-                      <Chip tone={r.risk === "High" ? "danger" : r.risk === "Medium" ? "warning" : "success"}>{r.risk}</Chip>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+            <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
 
-          {/* Carrier performance */}
-          <div className="panel overflow-hidden">
-            <div className="border-b border-border px-4 py-3 text-sm font-medium">Carrier performance (30d)</div>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-[11px] uppercase tracking-wider text-muted-foreground">
-                  <th className="px-4 py-2.5 text-left font-medium">Carrier</th>
-                  <th className="px-4 py-2.5 text-left font-medium">Mode</th>
-                  <th className="px-4 py-2.5 text-right font-medium">On time</th>
-                  <th className="px-4 py-2.5 text-right font-medium">Avg delay</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {CARRIER_PERF.sort((a, b) => b.onTimeRate - a.onTimeRate).map((c) => (
-                  <tr key={c.carrier} className="hover:bg-surface-2/60 transition-colors">
-                    <td className="px-4 py-2.5">
-                      <div>{c.carrier}</div>
-                      <div className="text-[11px] text-muted-foreground">{c.shipments30d} shipments</div>
-                    </td>
-                    <td className="px-4 py-2.5 text-muted-foreground">{c.mode}</td>
-                    <td className="px-4 py-2.5 text-right">
-                      <Chip tone={c.onTimeRate >= 0.9 ? "success" : c.onTimeRate >= 0.8 ? "warning" : "danger"}>
-                        {formatPct(c.onTimeRate)}
-                      </Chip>
-                    </td>
-                    <td className="px-4 py-2.5 text-right num text-muted-foreground">{c.avgDelayH}h</td>
-                  </tr>
-                ))}
-                <tr className="bg-surface-2/40 text-[11px] font-semibold">
-                  <td className="px-4 py-2.5 text-muted-foreground uppercase tracking-wider" colSpan={2}>Fleet average</td>
-                  <td className="px-4 py-2.5 text-right num text-success">86%</td>
-                  <td className="px-4 py-2.5 text-right num text-muted-foreground">2.5h</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+              {/* Lane reliability (30d) */}
+              <div className="panel overflow-hidden">
+                <div className="border-b border-border px-4 py-3 text-sm font-medium">Lane reliability (30d)</div>
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border text-[11px] uppercase tracking-wider text-muted-foreground">
+                      <th className="px-4 py-2.5 text-left font-medium">Lane</th>
+                      <th className="px-4 py-2.5 text-right font-medium">On time</th>
+                      <th className="px-4 py-2.5 text-right font-medium">Avg delay</th>
+                      <th className="px-4 py-2.5 text-left font-medium">Risk</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {LANE_STATS.map((r) => (
+                      <tr key={r.lane} className="hover:bg-surface-2/60 transition-colors">
+                        <td className="px-4 py-2.5">
+                          <div className="font-medium text-xs">{r.lane}</div>
+                          <div className="text-[11px] text-muted-foreground">{r.mode} · {r.incidents} incidents</div>
+                        </td>
+                        <td className="px-4 py-2.5 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <div className="h-1.5 w-14 rounded-full bg-border overflow-hidden">
+                              <div className="h-full rounded-full" style={{ width: `${r.onTime30d * 100}%`, background: r.onTime30d >= 0.9 ? "var(--color-success)" : r.onTime30d >= 0.8 ? "var(--color-warning)" : "var(--color-destructive)" }} />
+                            </div>
+                            <span className="num text-xs">{Math.round(r.onTime30d * 100)}%</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-2.5 text-right num text-muted-foreground text-xs">{r.avgDelay}</td>
+                        <td className="px-4 py-2.5">
+                          <Chip tone={r.risk === "High" ? "danger" : r.risk === "Medium" ? "warning" : "success"}>{r.risk}</Chip>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-        {/* Shipments detail table */}
-        <div className="panel overflow-hidden">
-          <div className="border-b border-border px-4 py-3 text-sm font-medium">Active shipments</div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-[11px] uppercase tracking-wider text-muted-foreground">
-                  <th className="px-4 py-2.5 text-left font-medium">ID</th>
-                  <th className="px-4 py-2.5 text-left font-medium">Lane</th>
-                  <th className="px-4 py-2.5 text-left font-medium">Carrier</th>
-                  <th className="px-4 py-2.5 text-right font-medium">Units</th>
-                  <th className="px-4 py-2.5 text-left font-medium">Mode</th>
-                  <th className="px-4 py-2.5 text-left font-medium">ETA</th>
-                  <th className="px-4 py-2.5 text-left font-medium">SLA</th>
-                  <th className="px-4 py-2.5 text-left font-medium">Note</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {LANE_DETAIL.map((r) => (
-                  <tr key={r.id} className="hover:bg-surface-2/60 transition-colors">
-                    <td className="px-4 py-2.5 num font-medium">{r.id}</td>
-                    <td className="px-4 py-2.5">{r.name}</td>
-                    <td className="px-4 py-2.5 text-muted-foreground">{r.carrier}</td>
-                    <td className="px-4 py-2.5 text-right num">{formatNumber(r.units)}</td>
-                    <td className="px-4 py-2.5 text-muted-foreground">{r.mode}</td>
-                    <td className="px-4 py-2.5"><Chip tone={etaTone(r.eta)}>{r.eta}</Chip></td>
-                    <td className="px-4 py-2.5">
-                      <Chip tone={r.sla === "Critical" ? "danger" : r.sla === "Express" ? "primary" : "neutral"}>{r.sla}</Chip>
-                    </td>
-                    <td className="px-4 py-2.5 text-[11px] text-muted-foreground max-w-xs truncate">{r.note}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+              {/* Carrier performance */}
+              <div className="panel overflow-hidden">
+                <div className="border-b border-border px-4 py-3 text-sm font-medium">Carrier performance (30d)</div>
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border text-[11px] uppercase tracking-wider text-muted-foreground">
+                      <th className="px-4 py-2.5 text-left font-medium">Carrier</th>
+                      <th className="px-4 py-2.5 text-left font-medium">Mode</th>
+                      <th className="px-4 py-2.5 text-right font-medium">On time</th>
+                      <th className="px-4 py-2.5 text-right font-medium">Avg delay</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {CARRIER_PERF.sort((a, b) => b.onTimeRate - a.onTimeRate).map((c) => (
+                      <tr key={c.carrier} className="hover:bg-surface-2/60 transition-colors">
+                        <td className="px-4 py-2.5">
+                          <div>{c.carrier}</div>
+                          <div className="text-[11px] text-muted-foreground">{c.shipments30d} shipments</div>
+                        </td>
+                        <td className="px-4 py-2.5 text-muted-foreground">{c.mode}</td>
+                        <td className="px-4 py-2.5 text-right">
+                          <Chip tone={c.onTimeRate >= 0.9 ? "success" : c.onTimeRate >= 0.8 ? "warning" : "danger"}>
+                            {formatPct(c.onTimeRate)}
+                          </Chip>
+                        </td>
+                        <td className="px-4 py-2.5 text-right num text-muted-foreground">{c.avgDelayH}h</td>
+                      </tr>
+                    ))}
+                    <tr className="bg-surface-2/40 text-[11px] font-semibold">
+                      <td className="px-4 py-2.5 text-muted-foreground uppercase tracking-wider" colSpan={2}>Fleet average</td>
+                      <td className="px-4 py-2.5 text-right num text-success">86%</td>
+                      <td className="px-4 py-2.5 text-right num text-muted-foreground">2.5h</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Shipments detail table */}
+            <div className="panel overflow-hidden">
+              <div className="border-b border-border px-4 py-3 text-sm font-medium">Active shipments</div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border text-[11px] uppercase tracking-wider text-muted-foreground">
+                      <th className="px-4 py-2.5 text-left font-medium">ID</th>
+                      <th className="px-4 py-2.5 text-left font-medium">Lane</th>
+                      <th className="px-4 py-2.5 text-left font-medium">Carrier</th>
+                      <th className="px-4 py-2.5 text-right font-medium">Units</th>
+                      <th className="px-4 py-2.5 text-left font-medium">Mode</th>
+                      <th className="px-4 py-2.5 text-left font-medium">ETA</th>
+                      <th className="px-4 py-2.5 text-left font-medium">SLA</th>
+                      <th className="px-4 py-2.5 text-left font-medium">Note</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {LANE_DETAIL.map((r) => (
+                      <tr key={r.id} className="hover:bg-surface-2/60 transition-colors">
+                        <td className="px-4 py-2.5 num font-medium">{r.id}</td>
+                        <td className="px-4 py-2.5">{r.name}</td>
+                        <td className="px-4 py-2.5 text-muted-foreground">{r.carrier}</td>
+                        <td className="px-4 py-2.5 text-right num">{formatNumber(r.units)}</td>
+                        <td className="px-4 py-2.5 text-muted-foreground">{r.mode}</td>
+                        <td className="px-4 py-2.5"><Chip tone={etaTone(r.eta)}>{r.eta}</Chip></td>
+                        <td className="px-4 py-2.5">
+                          <Chip tone={r.sla === "Critical" ? "danger" : r.sla === "Express" ? "primary" : "neutral"}>{r.sla}</Chip>
+                        </td>
+                        <td className="px-4 py-2.5 text-[11px] text-muted-foreground max-w-xs truncate">{r.note}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </AppShell>
   );

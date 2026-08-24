@@ -5,6 +5,9 @@ import {
 import { AlertCircle, Clock, CheckCircle2, PackageX } from "lucide-react";
 import { AppShell, PageHeader, Chip } from "@/components/ops/AppShell";
 import { ORDERS, formatNumber, formatRp } from "@/lib/ops-data";
+import { api } from "@/lib/api";
+import { useApiData } from "@/hooks/use-api-data";
+import { EmptyState, SkeletonLoader } from "@/components/ops/EmptyState";
 
 export const Route = createFileRoute("/orders")({
   head: () => ({
@@ -49,13 +52,15 @@ const PROMISE_BUCKETS = [
 ];
 
 function OrdersPage() {
-  const atRisk   = ORDERS.filter((o) => o.status === "At risk").length;
-  const onTrack  = ORDERS.filter((o) => o.status === "On track").length;
-  const total    = ORDERS.length;
+  const { data: ordersData, loading, isEmpty } = useApiData(ORDERS, api.orders);
+
+  const atRisk   = ordersData.filter((o) => o.status === "At risk").length;
+  const onTrack  = ordersData.filter((o) => o.status === "On track").length;
+  const total    = ordersData.length;
   const atRiskPct = Math.round((atRisk / total) * 100);
 
-  const totalUnits = ORDERS.reduce((s, o) => s + o.qty, 0);
-  const atRiskUnits = ORDERS.filter((o) => o.status === "At risk").reduce((s, o) => s + o.qty, 0);
+  const totalUnits = ordersData.reduce((s, o) => s + o.qty, 0);
+  const atRiskUnits = ordersData.filter((o) => o.status === "At risk").reduce((s, o) => s + o.qty, 0);
 
   return (
     <AppShell>
@@ -66,8 +71,14 @@ function OrdersPage() {
       />
       <div className="px-6 py-6 md:px-8 space-y-4">
 
-        {/* KPI row */}
-        <div className="grid gap-3 sm:grid-cols-4">
+        {loading ? (
+          <SkeletonLoader />
+        ) : isEmpty ? (
+          <EmptyState />
+        ) : (
+          <>
+            {/* KPI row */}
+            <div className="grid gap-3 sm:grid-cols-4">
           <div className="panel p-4 flex gap-3 items-start">
             <div className="mt-0.5 rounded-lg bg-surface-2 p-2"><PackageX className="size-4 text-muted-foreground" /></div>
             <div>
@@ -110,7 +121,7 @@ function OrdersPage() {
             </div>
             <div className="p-4" style={{ height: 180 }}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={DAILY_VOLUME} barCategoryGap="25%">
+                <BarChart data={DAILY_VOLUME.map((d) => ({ ...d, totalStacked: d.total - d.atRisk }))} barCategoryGap="25%">
                   <CartesianGrid vertical={false} stroke="oklch(0 0 0 / 6%)" />
                   <XAxis dataKey="day" tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} tickFormatter={(v) => `${(v/1000).toFixed(0)}k`} />
@@ -119,9 +130,7 @@ function OrdersPage() {
                     contentStyle={{ background: "var(--color-card)", border: "1px solid var(--color-border)", borderRadius: 6, fontSize: 12 }}
                   />
                   <Bar dataKey="atRisk" name="atRisk" stackId="a" fill="oklch(0.52 0.22 22)" radius={0} />
-                  <Bar dataKey="total" name="total" stackId="a" fill="oklch(0.52 0.16 158)" radius={[3, 3, 0, 0]}
-                    data={DAILY_VOLUME.map((d) => ({ ...d, total: d.total - d.atRisk }))}
-                  />
+                  <Bar dataKey="totalStacked" name="total" stackId="a" fill="oklch(0.52 0.16 158)" radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -242,7 +251,7 @@ function OrdersPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {ORDERS.map((r) => (
+                {ordersData.map((r) => (
                   <tr key={r.id} className="hover:bg-surface-2/60 transition-colors">
                     <td className="px-4 py-2.5 num font-medium">{r.id}</td>
                     <td className="px-4 py-2.5 text-muted-foreground">{r.sku}</td>
@@ -264,6 +273,8 @@ function OrdersPage() {
             </table>
           </div>
         </div>
+        </>
+        )}
       </div>
     </AppShell>
   );

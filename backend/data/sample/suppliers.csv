@@ -1,0 +1,10 @@
+supplier,material,leadTimeDays,reliabilityPct,costPerUnitIdr
+PT Mitra Baja,RM-Steel-A1,2,91,45000
+PT Karya Logam,RM-Steel-A1,2.5,97,52000
+CV Sumber Material,RM-Steel-A1,3,88,41000
+PT Plastik Prima,SKU-3391,1.5,96,12000
+CV Kemasan Nusantara,SKU-3391,2,93,11000
+PT Sinergi Industri,SKU-1180,2,95,28000
+PT Global Supply,SKU-4421,1.5,97,18000
+CV Indo Parts,SKU-9913,2.5,89,9500
+PT Maju Bersama,SKU-7702,2,94,15000

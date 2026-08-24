@@ -8,6 +8,7 @@ import {
   Wallet,
   Sparkles,
   History,
+  UploadCloud,
   type LucideIcon,
 } from "lucide-react";
 import type { ReactNode } from "react";
@@ -16,6 +17,7 @@ import { cn } from "@/lib/utils";
 
 const NAV: { to: string; label: string; icon: LucideIcon }[] = [
   { to: "/", label: "Overview", icon: LayoutDashboard },
+  { to: "/upload", label: "Upload", icon: UploadCloud },
   { to: "/orders", label: "Orders", icon: ShoppingCart },
   { to: "/inventory", label: "Inventory", icon: Boxes },
   { to: "/production", label: "Production", icon: Factory },

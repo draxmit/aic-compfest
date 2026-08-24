@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowUpRight, AlertTriangle, ShieldCheck, TrendingDown, TrendingUp } from "lucide-react";
 import { AppShell, PageHeader, Chip, SeverityDot } from "@/components/ops/AppShell";
+import { EmptyState, SkeletonLoader } from "@/components/ops/EmptyState";
 import { useOps } from "@/lib/ops-store";
+import { api, type OverviewResult } from "@/lib/api";
+import { useApiData } from "@/hooks/use-api-data";
 import {
   EXCEPTION_TYPE_LABEL,
   SYSTEM_HEALTH,
@@ -35,7 +38,7 @@ export const Route = createFileRoute("/")({
 function Stat({
   label, value, sub, trend, trendGood,
 }: {
-  label: string; value: string; sub?: string; trend?: string; trendGood?: boolean;
+  label: string; value: string; sub?: string | undefined; trend?: string | undefined; trendGood?: boolean | undefined;
 }) {
   return (
     <div className="panel p-4">
@@ -57,12 +60,28 @@ function Stat({
   );
 }
 
+const OVERVIEW_FALLBACK: OverviewResult = {
+  active_exceptions: 3,
+  open_exceptions: 3,
+  approved_exceptions: 0,
+  potential_loss_idr: 283_000_000,
+  loss_avoided_idr: 512_000_000,
+  worst_sla_risk: 0.71,
+  total_affected_orders: 20350,
+  system_health: SYSTEM_HEALTH.map((s) => ({ name: s.name, status: s.status, detail: s.detail })),
+  recent_actions: [],
+  source: "demo",
+};
+
 function OverviewPage() {
   const { exceptions, openExceptions, history } = useOps();
-  const exposure  = openExceptions.reduce((s, e) => s + e.impact.expectedLoss, 0);
-  const avoided   = history.reduce((s, h) => s + h.lossAvoided, 0);
-  const affected  = openExceptions.reduce((s, e) => s + e.impact.affectedOrders, 0);
-  const worstSla  = openExceptions.length ? Math.max(...openExceptions.map((e) => e.impact.slaRisk)) : 0;
+  const { data: overview, loading, isEmpty } = useApiData(OVERVIEW_FALLBACK, api.overview);
+  
+  const exposure  = overview.potential_loss_idr || openExceptions.reduce((s, e) => s + e.impact.expectedLoss, 0);
+  const avoided   = overview.loss_avoided_idr || history.reduce((s, h) => s + h.lossAvoided, 0);
+  const affected  = overview.total_affected_orders || openExceptions.reduce((s, e) => s + e.impact.affectedOrders, 0);
+  const worstSla  = overview.worst_sla_risk || (openExceptions.length ? Math.max(...openExceptions.map((e) => e.impact.slaRisk)) : 0);
+  const openCount = overview.open_exceptions;
 
   // 30-day baseline context (from historical data)
   const historicalAvoided = 512_000_000;
@@ -84,11 +103,17 @@ function OverviewPage() {
       />
 
       <div className="hero-glow px-6 py-6 md:px-8">
+        {loading ? (
+          <SkeletonLoader />
+        ) : isEmpty ? (
+          <EmptyState />
+        ) : (
+        <>
         <div className="grid gap-3 md:grid-cols-4">
           <Stat
             label="Open exceptions"
-            value={String(openExceptions.length)}
-            trend={openExceptions.length === 3 ? "3 detected today" : undefined}
+            value={String(openCount)}
+            trend={openCount === 3 ? "3 detected today" : undefined}
             trendGood={false}
             sub={`${exceptions.length} total active`}
           />
@@ -191,7 +216,7 @@ function OverviewPage() {
                 <ShieldCheck className="size-4 text-success" /> System health
               </div>
               <ul className="divide-y divide-border">
-                {SYSTEM_HEALTH.map((s) => (
+                {overview.system_health.map((s) => (
                   <li key={s.name} className="flex items-center justify-between gap-3 px-4 py-2">
                     <div>
                       <div className="text-sm">{s.name}</div>
@@ -209,24 +234,8 @@ function OverviewPage() {
                 <TrendingDown className="size-4 text-primary" /> Recent AI actions
               </div>
               {history.length === 0 ? (
-                <div className="px-4 py-3">
-                  <div className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider mb-2">Last 30-day decisions</div>
-                  <ul className="divide-y divide-border -mx-4">
-                    {EXCEPTION_HISTORY.map((h) => (
-                      <li key={h.code} className="px-4 py-2.5 flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                            <span className="num">{h.code}</span>
-                            <span>·</span>
-                            <span>{EXCEPTION_TYPE_LABEL[h.type]}</span>
-                            {h.override && <Chip tone="warning" className="ml-1">AI override</Chip>}
-                          </div>
-                          <div className="mt-0.5 text-xs text-foreground truncate">{h.option}</div>
-                        </div>
-                        <span className="num text-xs text-success shrink-0">+{formatRp(h.lossAvoided)}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="px-4 py-3 text-sm text-muted-foreground">
+                  No actions taken yet.
                 </div>
               ) : (
                 <ul className="divide-y divide-border">
@@ -245,6 +254,8 @@ function OverviewPage() {
             </div>
           </div>
         </div>
+        </>
+        )}
       </div>
     </AppShell>
   );
