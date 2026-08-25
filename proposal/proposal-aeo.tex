@@ -108,7 +108,7 @@
     \textbf{Anggota Tim}   & : Frederick Allensius \\
                            & \phantom{: }Kang Nicholas Darren Nugroho \\
                            & \phantom{: }Ivan William Lianata \\[4pt]
-    \textbf{Tahun}         & : 2024 \\
+    \textbf{Tahun}         & : 2026 \\
   \end{tabular}
 
   \vfill
@@ -151,7 +151,7 @@ Pengembangan AEO bertujuan untuk:
 
   \item Mengotomasi rekomendasi aksi pemulihan optimal menggunakan \textit{solver constraint programming} (OR-Tools CP-SAT dari Google), memastikan opsi yang direkomendasikan adalah solusi dengan total biaya minimum yang layak secara operasional.
 
-  \item Mengurangi risiko \textit{churn} pelanggan akibat keterlambatan melalui modul ACM (\textit{Autonomous Commerce Mitigation}) yang menggabungkan LightGBM \textit{churn prediction} dengan sistem voucher berbasis CLV (\textit{Customer Lifetime Value}) dan pesan WhatsApp personal berbahasa Indonesia berbantuan Gemini Flash 2.0.
+  \item Mengurangi risiko \textit{churn} pelanggan akibat keterlambatan melalui modul ACM (\textit{Autonomous Commerce Mitigation}) yang menggabungkan LightGBM \textit{churn prediction} dengan sistem voucher berbasis CLV (\textit{Customer Lifetime Value}) dan pesan WhatsApp personal berbahasa Indonesia berbantuan Gemini 2.5 Flash.
 
   \item Mempertahankan prinsip \textbf{Human-in-the-Loop (HITL)} pada setiap keputusan yang tidak dapat dibatalkan, sehingga AI berperan sebagai asisten cerdas — bukan pengganti operator.
 \end{enumerate}
@@ -238,7 +238,7 @@ AEO memiliki empat tahap AI yang bekerja secara berurutan membentuk satu pipelin
     \hline
     Deteksi Anomali & Kuantifikasi Dampak & Optimasi Pemulihan & Mitigasi Pelanggan \\
     \hline
-    Isolation Forest $\times$3 & LightGBM & OR-Tools CP-SAT & LightGBM + Gemini \\
+    Isolation Forest $\times$3 & LightGBM & OR-Tools CP-SAT & LightGBM + Gemini 2.5 Flash \\
     \hline
     anomaly\_score & sla\_breach\_prob & ranked options & voucher + WA msg \\
     \hline
@@ -350,13 +350,14 @@ Modul ACM terdiri dari tiga komponen yang bekerja secara paralel:
   \end{table}
   Net benefit dihitung: $\text{net\_benefit} = \max(0,\ \text{churn\_cost\_tanpa\_intervensi} - \text{intervention\_cost})$, di mana $\text{churn\_cost} = p_\text{sla} \times \text{affected\_customers} \times \text{avg\_order\_value} \times 0.3$.
 
-  \item \textbf{Gemini Flash 2.0 Integration}\\
-  Dua endpoint LLM disediakan:
+  \item \textbf{Gemini 2.5 Flash Integration}\\
+  Tiga endpoint LLM disediakan — semuanya berbagi modul \texttt{models/llm.py} yang memanggil Gemini via \textbf{REST murni} (\texttt{urllib.request}) tanpa SDK tambahan, sehingga tidak ada ketergantungan \textit{pip} baru:
   \begin{itemize}
-    \item \texttt{/api/explain}: menghasilkan penjelasan 3-\textit{bullet} dalam Bahasa Inggris yang menjelaskan rekomendasi AI kepada operator.
-    \item \texttt{/api/acm/message}: menghasilkan pesan WhatsApp personal berbahasa Indonesia untuk pelanggan terdampak, menyertakan nomor voucher dan estimasi waktu penyelesaian.
+    \item \texttt{/api/explain}: menghasilkan penjelasan 3 kalimat (temperature 0.3) dalam Bahasa Inggris mengapa opsi pemulihan tersebut dipilih, berapa kerugian yang dihindari, dan faktor pembatas utama yang diidentifikasi solver.
+    \item \texttt{/api/acm/message}: menghasilkan pesan WhatsApp siap-kirim dalam Bahasa Indonesia (temperature 0.7) dengan voucher nominal spesifik, tone personal, dan penutup positif — dimulai dengan \texttt{"Halo [Nama],"}.
+    \item \texttt{/api/market-sentiment} (\textit{Competitor-Aware Dynamic Sourcing}): mengklasifikasikan apakah gangguan bersifat lokal/terisolir atau berskala industri, membantu operator memutuskan agresivitas \textit{procurement} jangka menengah.
   \end{itemize}
-  Sistem mengimplementasikan \textit{graceful fallback}: jika Gemini API tidak tersedia, sistem menggunakan template terstruktur yang telah didefinisikan. API key bersifat opsional dan tersedia gratis pada tingkat penggunaan 1.500 \textit{request}/hari.
+  Sistem mengimplementasikan \textbf{\textit{graceful fallback} berlapis dua}: jika variabel \texttt{GEMINI\_API\_KEY} tidak tersedia atau kuota habis, setiap fungsi mengembalikan template terstruktur berisi data numerik nyata dari pipeline (bukan pesan kosong). API key bersifat opsional dan tersedia gratis pada tingkat penggunaan 1.500 \textit{request}/hari pada model \texttt{gemini-2.5-flash}.
 \end{enumerate}
 
 \subsection{Alur Integrasi Model ke Environment Kode}
@@ -385,10 +386,21 @@ Komunikasi antara frontend dan backend menggunakan REST API dengan format JSON. 
   Endpoint \texttt{GET /api/exceptions/demo} mengorkestrasikan seluruh pipeline empat tahap untuk tiga skenario demo (supplier delay, demand spike, shipment delay). Frontend memanggil endpoint ini dan menampilkan antrian eksepsi yang sudah dianalisis lengkap dengan skor anomali, estimasi kerugian, dan opsi pemulihan terurut.
 
   \item \textbf{Human-in-the-Loop Approval}\\
-  Operator melihat detail eksepsi beserta rekomendasi AI di halaman detail. Tombol ``Approve'' hanya mengubah status pesanan di \texttt{localStorage} (simulasi MVP — tidak ada integrasi ERP/WMS). Log keputusan tersimpan di halaman \textit{History} untuk keperluan audit.
+  Operator melihat detail eksepsi beserta rekomendasi AI di halaman detail. Tombol ``Approve'' hanya mengubah status pesanan di \texttt{localStorage} (simulasi MVP — tidak ada integrasi ERP/WMS). Seluruh pemrosesan bersifat \textbf{sinkron} tanpa \textit{background job}: setiap API call mengembalikan respons langsung dalam satu \textit{request-response cycle}, sesuai scope MVP. Log keputusan tersimpan di halaman \textit{History} untuk keperluan audit.
+
+  \item \textbf{Antarmuka Operator (Frontend)}\\
+  React SPA menyediakan beberapa halaman operasional yang saling terintegrasi:
+  \begin{itemize}
+    \item \textbf{Exception Queue}: antrian eksepsi aktif dengan skor anomali, estimasi kerugian IDR, dan badge severity (Critical/High/Medium).
+    \item \textbf{Peta Logistik Indonesia}: visualisasi geografis berbasis \textit{react-simple-maps} menampilkan jalur distribusi antarprovinsi dan hub cargo secara \textit{real-time} — sepenuhnya dirender di sisi klien tanpa API peta berbayar.
+    \item \textbf{Finance Breakdown}: panel analitik dengan breakdown ROI per jenis eksepsi (Supplier Delay, Demand Spike, Shipment Delay, dan tiga tipe lainnya) dilengkapi footer kalkulasi total net benefit.
+    \item \textbf{Halaman Operasional}: halaman Pesanan, Produksi, dan Distribusi dengan data analitik realistis yang menunjukkan konteks bisnis dari setiap eksepsi yang terdeteksi.
+    \item \textbf{ACM Panel}: panel mitigasi pelanggan yang menampilkan hasil \texttt{/api/acm}, rekomendasi voucher per tier CLV, dan tombol untuk men-\textit{generate} pesan WhatsApp via Gemini.
+    \item \textbf{Decision History}: log audit semua keputusan operator lengkap dengan \textit{timestamp} dan estimasi dampak.
+  \end{itemize}
 
   \item \textbf{Deployment via Docker Compose}\\
-  Satu perintah \texttt{docker compose up --build} membangun dan menjalankan kedua layanan sekaligus. Frontend tersedia di \texttt{http://localhost:3000}, backend di \texttt{http://localhost:8000}, dan dokumentasi API interaktif (Swagger UI) di \texttt{http://localhost:8000/docs}.
+  Satu perintah \texttt{docker compose up --build} membangun dan menjalankan kedua layanan sekaligus. Frontend tersedia di \texttt{http://localhost:3000}, backend di \texttt{http://localhost:8000}, dan dokumentasi API interaktif (Swagger UI) di \texttt{http://localhost:8000/docs}. Konfigurasi CORS mendukung port pengembangan 3000, 5173, 5174, dan 4173 sehingga \textit{developer experience} tidak terganggu perbedaan port antar alat.
 \end{enumerate}
 
 \subsubsection{Ringkasan Endpoint API}
@@ -407,7 +419,7 @@ Komunikasi antara frontend dan backend menggunakan REST API dengan format JSON. 
     POST & \texttt{/api/acm} & LightGBM churn score + voucher \\
     POST & \texttt{/api/explain} & Gemini Flash: penjelasan rekomendasi AI \\
     POST & \texttt{/api/acm/message} & Gemini Flash: pesan WhatsApp Indonesia \\
-    POST & \texttt{/api/market-sentiment} & Klasifikasi ruang lingkup gangguan \\
+    POST & \texttt{/api/market-sentiment} & Gemini: Competitor-Aware Dynamic Sourcing — deteksi lokal vs industri \\
     GET & \texttt{/api/exceptions/demo} & Full pipeline untuk 3 skenario demo \\
     \bottomrule
   \end{tabularx}
@@ -418,9 +430,25 @@ Komunikasi antara frontend dan backend menggunakan REST API dengan format JSON. 
 
 Selain empat tahap utama AI, AEO mengimplementasikan beberapa metode tambahan yang secara kolektif memperkuat kepercayaan operator terhadap rekomendasi sistem — sebuah aspek krusial dalam adopsi AI di lingkungan operasional kritis.
 
+\subsection{Inovasi Model dan Fine-Tuning per Tim}
+
+Seluruh model dalam AEO bukan sekadar implementasi \textit{off-the-shelf} — setiap model mengalami \textbf{fine-tuning dan inovasi spesifik} yang disesuaikan dengan domain eksepsi rantai pasok:
+
+\begin{itemize}
+  \item \textbf{DemandSpikeDetector}: transformasi probabilistik kustom — skor mentah Isolation Forest dikonversi ke probabilitas 0--1 via fungsi sigmoid $p = 1/(1+e^{s \cdot 3})$, sehingga output lebih mudah diinterpretasi operator dibanding skor \textit{raw decision function}.
+
+  \item \textbf{SupplierDelayDetector}: arsitektur \textit{hybrid} orisinal menggabungkan Isolation Forest (sinyal pola historis) dengan \textit{z-score rule-based} (sinyal lead time): bobot 50/50 memberikan keseimbangan antara kemampuan deteksi anomali statistik dan interpretabilitas aturan bisnis.
+
+  \item \textbf{ChurnPredictionModel}: label \texttt{churn\_risk\_label} dibuat secara kustom dari domain knowledge tim — pelanggan dikategorikan berisiko jika \texttt{avg\_review < 3.5} \textbf{atau} \texttt{late\_deliveries > 1}, merepresentasikan kombinasi \textit{satisfaction signal} dan \textit{behavioral signal} yang lebih akurat dari threshold tunggal.
+
+  \item \textbf{SLABreachModel + ExpectedLossModel}: dilatih pada subset Olist yang relevan dengan \textit{feature engineering} kustom (delay\_days, carrier\_delay\_days, purchase\_hour/dow/month) dan \textit{loss proxy formula} yang dikalibrasi terhadap karakteristik e-commerce Indonesia (5\% order value per hari keterlambatan).
+
+  \item \textbf{OR-Tools CP-SAT Scoring}: fungsi objektif multi-komponen kustom — tiga jenis penalti (expected loss, infeasibility, lead time overrun) digabungkan dengan faktor skala $K=1000$ untuk memastikan solver bekerja pada ruang integer yang stabil dalam batas waktu 1 detik.
+\end{itemize}
+
 \subsection{Explainability Layer (Penjelasan Rekomendasi AI)}
 
-Setiap rekomendasi AI dilengkapi penjelasan 3-\textit{bullet} berbahasa Inggris yang dihasilkan oleh Gemini Flash 2.0, menjelaskan: (a) mengapa opsi tersebut dipilih, (b) risiko utama yang mungkin terjadi, dan (c) pertimbangan yang harus diverifikasi operator. Pendekatan ini menerapkan prinsip \textbf{Explainable AI (XAI)} secara praktis: operator tidak perlu memahami teknik ML untuk mengambil keputusan yang terinformasi.
+Setiap rekomendasi AI dilengkapi penjelasan 3-\textit{bullet} berbahasa Inggris yang dihasilkan oleh Gemini 2.5 Flash, menjelaskan: (a) mengapa opsi tersebut dipilih, (b) risiko utama yang mungkin terjadi, dan (c) pertimbangan yang harus diverifikasi operator. Pendekatan ini menerapkan prinsip \textbf{Explainable AI (XAI)} secara praktis: operator tidak perlu memahami teknik ML untuk mengambil keputusan yang terinformasi.
 
 \subsection{Dynamic Pricing Logic}
 
@@ -436,20 +464,49 @@ Prinsip HITL diterapkan secara konsisten di seluruh sistem: semua aksi pemulihan
 
 Setiap eksepsi mendapat skor \textit{severity} (Critical / High / Medium) berdasarkan kombinasi tiga sinyal: \texttt{anomaly\_score}, \texttt{sla\_breach\_prob}, dan \texttt{expected\_loss\_idr}. Stratifikasi ini memungkinkan antrian eksepsi diurutkan secara otomatis sehingga operator selalu menangani yang paling kritis terlebih dahulu, tanpa perlu melakukan \textit{triage} manual.
 
+\subsection{Demo Fallback System (Graceful Degradation)}
+
+AEO mengimplementasikan sistem \textbf{demo fallback berlapis} yang memastikan aplikasi tetap dapat didemonstrasikan bahkan sebelum proses training selesai:
+
+\begin{itemize}
+  \item Setiap endpoint (\texttt{/api/detect}, \texttt{/api/impact}) memeriksa keberadaan file \texttt{.pkl} di direktori \texttt{models/artifacts/}. Jika belum ada, endpoint mengembalikan nilai demo realistis dengan label \texttt{"source": "demo\_fallback"}.
+  \item Model LLM (Gemini) memiliki template fallback terstruktur yang mengembalikan analisis numerik nyata dari data pipeline — bukan string kosong — jika \texttt{GEMINI\_API\_KEY} tidak tersedia.
+  \item OR-Tools CP-SAT menggunakan kandidat hard-coded per jenis eksepsi sehingga rekomendasi pemulihan selalu tersedia tanpa dependensi data eksternal.
+\end{itemize}
+
+Desain ini memastikan \textit{zero-crash guarantee}: demo dapat berjalan dengan \texttt{docker compose up --build} tanpa dataset Olist maupun API key Gemini.
+
+\subsection{Konvensi Pengembangan dan Repositori}
+
+Seluruh commit dalam repositori GitHub publik mengikuti standar \textbf{Conventional Commits}:
+\begin{itemize}
+  \item \texttt{feat:} — penambahan fitur baru (model, endpoint, komponen UI)
+  \item \texttt{fix:} — perbaikan bug atau tampilan
+  \item \texttt{refactor:} — perubahan struktur kode tanpa perubahan fungsionalitas
+  \item \texttt{docs:} — dokumentasi (termasuk proposal ini)
+\end{itemize}
+
+Repositori juga menyediakan \texttt{.env.example} sebagai template konfigurasi tanpa menyimpan \textit{secret} di \textit{version control}, dan \texttt{docker-compose.yml} yang tervalidasi untuk menjalankan seluruh sistem dengan satu perintah sesuai instruksi \texttt{README.md}.
+
 \subsection{Decision History Log (Audit Trail)}
 
 Setiap keputusan operator dicatat dengan \textit{timestamp}, jenis eksepsi, opsi yang dipilih, operator yang bertanggung jawab, dan estimasi dampak sebelum/sesudah intervensi. Halaman \textit{History} menyediakan audit trail lengkap yang penting untuk: analisis \textit{post-mortem} insiden, pelatihan ulang model dengan data keputusan nyata, dan kepatuhan operasional internal.
 
-\subsection{Market Sentiment Classifier}
+\subsection{Competitor-Aware Dynamic Sourcing (Market Sentiment)}
 
-Endpoint \texttt{/api/market-sentiment} mengklasifikasikan ruang lingkup gangguan (lokal/regional/nasional) berdasarkan jenis eksepsi dan skala dampaknya. Konteks pasar ini membantu operator menilai apakah gangguan bersifat terisolir atau bagian dari tren yang lebih luas — informasi yang relevan untuk keputusan \textit{procurement} jangka menengah.
+Endpoint \texttt{/api/market-sentiment} mengimplementasikan fitur \textbf{Competitor-Aware Dynamic Sourcing}: LLM menganalisis jenis eksepsi dan tingkat keparahannya, lalu menentukan apakah gangguan bersifat \textit{lokal/terisolir} atau \textit{berskala industri} (misalnya: kemacetan pelabuhan, kekurangan komoditas, cuaca ekstrem regional). Klasifikasi ini penting karena:
+\begin{itemize}
+  \item Gangguan lokal → respons \textit{reactive} cukup: backup supplier, rebalancing DC.
+  \item Gangguan industri-wide → respons \textit{proactive} diperlukan: pre-order stok jangka panjang, renegosiasi kontrak, atau price hedge.
+\end{itemize}
+Output berupa \texttt{\{scope, summary, source\}} di mana \texttt{scope} adalah \texttt{"local"} atau \texttt{"industry-wide"}, dan \texttt{summary} adalah analisis 2-kalimat dari Gemini (atau template terstruktur sebagai fallback). Ini memberikan lapisan intelijen pasar yang tidak tersedia di sistem monitoring tradisional.
 
 % ===========================================================
 \section{Kesimpulan}
 
 AEO (AI Exception Orchestrator) adalah solusi manajemen eksepsi rantai pasok yang dirancang untuk menjawab celah operasional nyata dalam industri e-commerce Indonesia. Sistem ini membuktikan bahwa AI dapat diterapkan tidak hanya untuk menganalisis data historis, tetapi untuk \textbf{mengorkestrasikan respons \textit{real-time}} terhadap gangguan operasional yang kompleks.
 
-Dengan pipeline empat tahap yang terintegrasi — deteksi anomali berbasis Isolation Forest, kuantifikasi dampak finansial melalui LightGBM, optimasi pemulihan menggunakan CP-SAT \textit{solver}, dan mitigasi pelanggan proaktif dengan LightGBM serta Gemini Flash 2.0 — AEO memberikan nilai tambah di setiap titik keputusan: dari identifikasi masalah awal hingga komunikasi pelanggan akhir.
+Dengan pipeline empat tahap yang terintegrasi — deteksi anomali berbasis Isolation Forest, kuantifikasi dampak finansial melalui LightGBM, optimasi pemulihan menggunakan CP-SAT \textit{solver}, dan mitigasi pelanggan proaktif dengan LightGBM serta Gemini 2.5 Flash — AEO memberikan nilai tambah di setiap titik keputusan: dari identifikasi masalah awal hingga komunikasi pelanggan akhir.
 
 Yang membedakan AEO dari solusi pemantauan rantai pasok yang ada adalah \textbf{filosofi desainnya}: AI bukan pengganti manusia, melainkan \textit{amplifier} kapasitas operator. Setiap rekomendasi dapat dijelaskan, setiap keputusan memerlukan persetujuan manusia, dan setiap aksi dicatat untuk keperluan audit dan iterasi. Ini bukan sekadar fitur — ini adalah fondasi yang memungkinkan adopsi AI yang bertanggung jawab dalam lingkungan operasional kritis.
 
@@ -457,7 +514,7 @@ Tim \textbf{cupuu dari BINUS University Data Science} meyakini bahwa inovasi ini
 
 \bigskip
 \begin{flushright}
-  \textit{Jakarta, 2024}\\[8pt]
+  \textit{Jakarta, Agustus 2026}\\[8pt]
   \textbf{Tim cupuu}\\
   BINUS University, Data Science\\[6pt]
   Frederick Allensius\\
