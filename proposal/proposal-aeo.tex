@@ -915,10 +915,12 @@ Batas ruang lingkup ditetapkan eksplisit agar penilaian dapat dilakukan terhadap
 
 \subsection{Keterbatasan yang Kami Akui}
 
-Kejujuran mengenai keterbatasan kami nilai lebih berguna bagi evaluasi daripada klaim kesempurnaan. Lima berikut paling signifikan:
+Kejujuran mengenai keterbatasan kami nilai lebih berguna bagi evaluasi daripada klaim kesempurnaan. Enam berikut paling signifikan:
 
 \begin{enumerate}
   \item \textbf{Kesenjangan domain dataset.} Model dilatih pada data Brasil; pola statistiknya universal, tetapi kalibrasi absolut kerugian belum tervalidasi terhadap operasi Indonesia. \textit{Keterbatasan paling material dari keseluruhan sistem.}
+
+  \item \textbf{Metrik evaluasi kuantitatif belum dilaporkan di proposal ini.} \texttt{train.py} mencetak AUC/MAE validasi ke konsol saat pelatihan, tetapi kami sengaja tidak mencantumkan angka tersebut di sini karena belum melalui proses validasi silang yang kami anggap cukup ketat untuk diklaim sebagai hasil final --- melaporkan angka mentah berisiko menyesatkan alih-alih informatif. Pelaporan metrik terkurasi dijadwalkan sebagai item pertama \textit{Rencana Pengembangan} (Tabel~\ref{tab:roadmap}).
 
   \item \textbf{Label churn bersifat proksi.} Label dibentuk dari ulasan dan keterlambatan, bukan pembelian ulang teramati --- berkorelasi dengan churn, tidak identik.
 
@@ -936,6 +938,7 @@ Arsitektur berlapis memungkinkan pengembangan berikut dilakukan \textbf{tanpa pe
 \begin{table}[H]
   \centering\footnotesize
   \caption{Prioritas pengembangan dan lapisan yang terdampak}
+  \label{tab:roadmap}
   \begin{tabularx}{\textwidth}{L{0.8cm} Y L{3.6cm}}
     \toprule
     \textbf{No.} & \textbf{Rencana Pengembangan} & \textbf{Lapisan Terdampak} \\
