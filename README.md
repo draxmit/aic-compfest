@@ -13,7 +13,7 @@ AEO is an AI-powered supply chain exception management system that automatically
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │  React Frontend (Vite + TanStack Router + ShadCN · port 3000)   │
-│  Exception Queue → Detail → Approve → History                   │
+│  Upload → Dashboards → AI Operations (Queue, Detail, History)   │
 └────────────────────────┬────────────────────────────────────────┘
                          │ REST / JSON
 ┌────────────────────────▼────────────────────────────────────────┐
@@ -125,9 +125,9 @@ Features engineered: `delay_days`, `carrier_delay_days`, `sla_breach`, `order_va
 
 ## API Endpoints
 
+### 1. ML Model & AI Pipeline
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET` | `/health` | Backend + model status |
 | `POST` | `/api/detect` | Isolation Forest anomaly scoring |
 | `POST` | `/api/impact` | LightGBM SLA breach + loss prediction |
 | `POST` | `/api/optimize` | OR-Tools CP-SAT recovery options |
@@ -135,7 +135,27 @@ Features engineered: `delay_days`, `carrier_delay_days`, `sla_breach`, `order_va
 | `POST` | `/api/explain` | Gemini Flash explanation of AI recommendation |
 | `POST` | `/api/acm/message` | Gemini Flash Indonesian customer apology message |
 | `POST` | `/api/market-sentiment` | Disruption scope classification |
-| `GET` | `/api/exceptions/demo` | Full pipeline for all 3 demo scenarios |
+
+### 2. Orchestration & MVP Flow
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/health` | Backend + model status |
+| `POST` | `/api/uploads/{dataset_type}` | Upload operational CSVs (orders, inventory, etc) |
+| `GET` | `/api/sample/{dataset_type}.csv` | Download sample CSV files |
+| `POST` | `/api/exceptions/detect` | Run detection pipeline on uploaded data |
+| `GET` | `/api/exceptions` | List active exceptions |
+| `GET` | `/api/exceptions/{id}` | Get exception details + trigger live impact/optimize |
+| `POST` | `/api/exceptions/{id}/approve` | Approve an AI recommended action |
+| `POST` | `/api/exceptions/{id}/reject` | Reject the AI recommendations |
+| `GET` | `/api/actions` | View Action History (decisions made) |
+| `DELETE` | `/api/actions` | Clear Action History |
+| `GET` | `/api/finance` | Real-time financial KPIs based on actions taken |
+| `GET` | `/api/overview` | Macro view of operational health |
+| `GET` | `/api/orders` | Fetch uploaded orders |
+| `GET` | `/api/inventory` | Fetch uploaded inventory |
+| `GET` | `/api/production` | Fetch uploaded production data |
+| `GET` | `/api/shipments` | Fetch uploaded shipments |
+| `GET` | `/api/suppliers` | Fetch uploaded suppliers |
 
 Interactive docs: `http://localhost:8000/docs`
 
@@ -167,6 +187,13 @@ aic-compfest/
 │   │   ├── ops-data.ts         # Exception data + types
 │   │   └── ops-store.tsx       # React context + localStorage
 │   ├── routes/
+│   │   ├── index.tsx                        # Overview Dashboard
+│   │   ├── upload.tsx                       # Data upload & validation
+│   │   ├── finance.tsx                      # Real-time financial KPIs
+│   │   ├── orders.tsx                       # Operational dashboards
+│   │   ├── inventory.tsx                    # ...
+│   │   ├── production.tsx                   # ...
+│   │   ├── logistics.tsx                    # ...
 │   │   ├── ai-operations.index.tsx          # Exception queue
 │   │   ├── ai-operations.exceptions.$exceptionId.tsx  # Detail + ACM
 │   │   └── ai-operations.history.tsx        # Decision log
@@ -191,11 +218,13 @@ aic-compfest/
 
 ## Team
 
-**cupuu** — BINUS University, Data Science
+**cupuu** — BINUS University
 
 - Frederick Allensius
 - Kang Nicholas Darren Nugroho
 - Ivan William Lianata
+- Derry Riccardo
+- Jennifer Carla
 
 ---
 
