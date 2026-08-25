@@ -126,7 +126,7 @@
   \rule{\linewidth}{1pt}
   \vspace{0.5cm}
 
-  \includegraphics[width=3.5cm]{logo-aeo.png}\\[0.4cm]
+  \IfFileExists{logo-aeo.png}{\includegraphics[width=3.5cm]{logo-aeo.png}\\[0.4cm]}{}
 
   {\Huge\bfseries AEO}\\[6pt]
   {\LARGE\bfseries AI Exception Orchestrator}\\[10pt]
@@ -677,35 +677,66 @@ Pemisahan pada Gambar~\ref{fig:arch} bukan sekadar penataan berkas: model dapat 
 
 \begin{table}[H]
   \centering\footnotesize
-  \caption{Endpoint API AEO}
-  \begin{tabularx}{\textwidth}{L{1.1cm} L{4.3cm} Y}
+  \caption{Endpoint API AEO: ringkasan}
+  \begin{tabularx}{\textwidth}{L{0.9cm} L{4.0cm} L{3.0cm} Y}
     \toprule
-    \textbf{Metode} & \textbf{Path} & \textbf{Fungsi} \\
+    \textbf{Met.} & \textbf{Path} & \textbf{Model / Teknologi} & \textbf{Fungsi} \\
     \midrule
-    GET  & \texttt{/health}               & Status backend dan ketersediaan artefak model \\
-    POST & \texttt{/api/detect}           & Skoring anomali Isolation Forest \\
-    POST & \texttt{/api/impact}           & Probabilitas SLA \textit{breach} + estimasi kerugian \\
-    POST & \texttt{/api/optimize}         & Opsi pemulihan terurut dari CP-SAT \\
-    POST & \texttt{/api/acm}              & Skor churn + rekomendasi voucher \\
-    POST & \texttt{/api/explain}          & Penjelasan rekomendasi berbahasa alami \\
-    POST & \texttt{/api/acm/message}      & Pesan pelanggan berbahasa Indonesia \\
-    POST & \texttt{/api/market-sentiment} & Klasifikasi lingkup gangguan \\
-    GET  & \texttt{/api/exceptions/demo}  & Pipeline penuh untuk tiga skenario demonstrasi \\
+    GET  & \texttt{/health}               & --                         & Status backend dan ketersediaan artefak model \\
+    POST & \texttt{/api/detect}           & Isolation Forest (x3)      & Skoring anomali per tipe eksepsi \\
+    POST & \texttt{/api/impact}           & LightGBM (biner + regresi) & Probabilitas SLA \textit{breach} + estimasi kerugian IDR \\
+    POST & \texttt{/api/optimize}         & OR-Tools CP-SAT            & Opsi pemulihan terurut, minimisasi total biaya \\
+    POST & \texttt{/api/acm}              & LightGBM churn             & Skor churn + rekomendasi voucher berbasis CLV \\
+    POST & \texttt{/api/explain}          & Gemini Flash 2.0           & Penjelasan 3-bullet berbahasa Inggris \\
+    POST & \texttt{/api/acm/message}      & Gemini Flash 2.0           & Pesan permintaan maaf Bahasa Indonesia siap kirim \\
+    POST & \texttt{/api/market-sentiment} & Gemini Flash 2.0           & Klasifikasi lingkup gangguan (lokal / industri) \\
+    GET  & \texttt{/api/exceptions/demo}  & Full pipeline              & Tiga skenario demo dengan skor ML terprakomputasi \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-\subsubsection{Detail Skema Request dan Response}
+\subsubsection{Skema Request dan Response per Endpoint}
 
-\paragraph{\texttt{POST /api/detect}} Menerima \texttt{exception\_type} (\texttt{supplier\_delay} / \texttt{demand\_spike} / \texttt{shipment\_delay}) beserta fitur numerik sesuai tipe: untuk \textit{demand spike} dibutuhkan \texttt{order\_count}, \texttt{rolling\_mean}, \texttt{rolling\_std}; untuk \textit{supplier delay} dibutuhkan \texttt{predicted\_delay\_hours}, \texttt{historical\_mean\_days}, \texttt{historical\_std\_days}, \texttt{supplier\_reliability}; untuk \textit{shipment delay} dibutuhkan \texttt{carrier\_delay\_days}, \texttt{item\_count}, \texttt{order\_value}. Response: \texttt{anomaly\_score} [0--1], \texttt{z\_score}, \texttt{is\_anomaly}, \texttt{severity} (critical/high/medium), \texttt{confidence}, \texttt{source} (model/demo\_fallback).
-
-\paragraph{\texttt{POST /api/impact}} Menerima \texttt{exception\_type}, \texttt{delay\_days}, \texttt{carrier\_delay\_days}, \texttt{item\_count}, \texttt{order\_value}, \texttt{purchase\_hour}, \texttt{purchase\_dow}, \texttt{purchase\_month}, \texttt{affected\_orders}, \texttt{scale\_factor}. LightGBM menghasilkan response: \texttt{sla\_breach\_prob} [0--1], \texttt{expected\_loss\_idr} (integer Rupiah), \texttt{affected\_orders}, \texttt{source}.
-
-\paragraph{\texttt{POST /api/optimize}} Menerima \texttt{exception\_type}, \texttt{required\_units}, \texttt{baseline\_loss}, \texttt{sla\_penalty\_per\_unit}, \texttt{delay\_hours}, \texttt{inventory\_cover\_days}, \texttt{affected\_orders}. CP-SAT menghasilkan daftar opsi, masing-masing berisi \texttt{id}, \texttt{label}, \texttt{summary}, \texttt{expected\_loss\_idr}, \texttt{sla\_risk}, \texttt{lead\_time\_hours}, \texttt{extra\_cost\_idr}, \texttt{feasibility} [0--1], \texttt{recommended} (boolean). Field \texttt{objective} dan \texttt{solver} disertakan sebagai metadata transparansi.
-
-\paragraph{\texttt{POST /api/acm}} Menerima \texttt{sla\_breach\_prob}, \texttt{affected\_customers}, \texttt{avg\_clv\_score}, \texttt{high\_clv\_count}, \texttt{exception\_type}, \texttt{delay\_hours}. Response: \texttt{churn\_probability}, \texttt{customers\_at\_risk}, \texttt{voucher\_amount\_idr}, \texttt{net\_benefit\_idr}, \texttt{dynamic\_pricing\_uplift\_pct}, \texttt{recommended\_action}.
-
-\paragraph{\texttt{POST /api/explain} dan \texttt{/api/acm/message}} \texttt{/api/explain} menerima field rekap solver (label opsi terpilih, kerugian, SLA risk, top drivers) dan mengembalikan \texttt{bullets[]} berisi tiga kalimat penjelasan dari Gemini Flash 2.0 (fallback template jika API key tidak tersedia). \texttt{/api/acm/message} menerima \texttt{exception\_type}, \texttt{delay\_hours}, \texttt{voucher\_amount\_idr}, \texttt{customer\_segment} dan mengembalikan \texttt{message} berbahasa Indonesia siap kirim.
+\begin{table}[H]
+  \centering\footnotesize
+  \caption{Skema request dan response endpoint model utama}
+  \begin{tabularx}{\textwidth}{L{3.6cm} Y Y}
+    \toprule
+    \textbf{Endpoint} & \textbf{Request Body Fields} & \textbf{Response Fields} \\
+    \midrule
+    \texttt{POST /api/detect}
+      & \texttt{exception\_type} (supplier\_delay \textbar{} demand\_spike \textbar{} shipment\_delay);
+        \textit{demand}: \texttt{order\_count}, \texttt{rolling\_mean}, \texttt{rolling\_std};
+        \textit{supplier}: \texttt{predicted\_delay\_hours}, \texttt{historical\_mean\_days}, \texttt{historical\_std\_days}, \texttt{supplier\_reliability};
+        \textit{shipment}: \texttt{carrier\_delay\_days}, \texttt{item\_count}, \texttt{order\_value}
+      & \texttt{anomaly\_score} [0--1], \texttt{z\_score}, \texttt{is\_anomaly}, \texttt{severity} (critical/high/medium), \texttt{confidence}, \texttt{source} \\
+    \addlinespace[4pt]
+    \texttt{POST /api/impact}
+      & \texttt{exception\_type}, \texttt{delay\_days}, \texttt{carrier\_delay\_days}, \texttt{item\_count}, \texttt{order\_value}, \texttt{purchase\_hour}, \texttt{purchase\_dow}, \texttt{purchase\_month}, \texttt{affected\_orders}, \texttt{scale\_factor}
+      & \texttt{sla\_breach\_prob} [0--1], \texttt{expected\_loss\_idr} (Rp), \texttt{affected\_orders}, \texttt{source} \\
+    \addlinespace[4pt]
+    \texttt{POST /api/optimize}
+      & \texttt{exception\_type}, \texttt{required\_units}, \texttt{baseline\_loss}, \texttt{sla\_penalty\_per\_unit}, \texttt{delay\_hours}, \texttt{inventory\_cover\_days}, \texttt{affected\_orders}
+      & \texttt{options[]} setiap elemen: \texttt{id}, \texttt{label}, \texttt{summary}, \texttt{expected\_loss\_idr}, \texttt{sla\_risk}, \texttt{lead\_time\_hours}, \texttt{extra\_cost\_idr}, \texttt{feasibility} [0--1], \texttt{recommended} (bool); metadata: \texttt{objective}, \texttt{solver} \\
+    \addlinespace[4pt]
+    \texttt{POST /api/acm}
+      & \texttt{sla\_breach\_prob}, \texttt{affected\_customers}, \texttt{avg\_clv\_score}, \texttt{high\_clv\_count}, \texttt{exception\_type}, \texttt{delay\_hours}
+      & \texttt{churn\_probability}, \texttt{customers\_at\_risk}, \texttt{high\_clv\_customers}, \texttt{voucher\_amount\_idr}, \texttt{total\_intervention\_cost\_idr}, \texttt{churn\_cost\_without\_action\_idr}, \texttt{net\_benefit\_idr}, \texttt{dynamic\_pricing\_uplift\_pct}, \texttt{recommended\_action} \\
+    \addlinespace[4pt]
+    \texttt{POST /api/explain}
+      & \texttt{exception\_type}, \texttt{recommended\_label}, \texttt{recommended\_loss\_idr}, \texttt{baseline\_loss\_idr}, \texttt{sla\_risk}, \texttt{lead\_time\_hours}, \texttt{affected\_orders}, \texttt{top\_drivers[]}
+      & \texttt{bullets[]} (3 kalimat), \texttt{source} (gemini/template), \texttt{model} \\
+    \addlinespace[4pt]
+    \texttt{POST /api/acm/message}
+      & \texttt{exception\_type}, \texttt{delay\_hours}, \texttt{voucher\_amount\_idr}, \texttt{customer\_segment}
+      & \texttt{message} (Bahasa Indonesia), \texttt{source}, \texttt{language}, \texttt{voucher\_idr} \\
+    \addlinespace[4pt]
+    \texttt{POST /api/market-sentiment}
+      & \texttt{exception\_type}, \texttt{severity}
+      & \texttt{scope} (local/industry-wide), \texttt{summary}, \texttt{source}, \texttt{model} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
 
 % ===========================================================
 \section{Metode Pendukung Pengambilan Keputusan}
