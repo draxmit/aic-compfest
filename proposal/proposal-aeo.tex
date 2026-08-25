@@ -1,4 +1,4 @@
-% ===========================================================
+﻿% ===========================================================
 %  AEO — AI Exception Orchestrator
 %  Proposal Inovasi AI · AI Innovation Challenge COMPFEST 18
 %  Tim cupuu
@@ -79,7 +79,7 @@
 % --- Header/Footer ---
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small\textit{AEO — AI Exception Orchestrator}}
+\fancyhead[L]{\small\textit{AEO: AI Exception Orchestrator}}
 \fancyhead[R]{\small\textit{COMPFEST 18 · Tim cupuu}}
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
@@ -120,16 +120,19 @@
 
   {\large\bfseries PROPOSAL INOVASI AI\\[4pt]}
   {\normalsize AI Innovation Challenge · COMPFEST 18\\[2pt]}
-  {\normalsize \textit{``AI for the Backbone of the Economy'' — Smart Commerce \& Smart Logistics}}
+  {\normalsize \textit{``AI for the Backbone of the Economy'': Smart Commerce \& Smart Logistics}}
 
-  \vspace{1.3cm}
+  \vspace{1.0cm}
   \rule{\linewidth}{1pt}
-  \vspace{0.4cm}
+  \vspace{0.5cm}
+
+  \includegraphics[width=3.5cm]{logo-aeo.png}\\[0.4cm]
 
   {\Huge\bfseries AEO}\\[6pt]
   {\LARGE\bfseries AI Exception Orchestrator}\\[10pt]
   {\large Orkestrasi Respons Eksepsi Rantai Pasok Berbasis AI\\[2pt]
-  dengan Kendali Manusia dan Kuantifikasi Kerugian}
+  dengan Kendali Manusia dan Kuantifikasi Kerugian}\\[4pt]
+  {\normalsize\textit{Detect $\cdot$ Quantify $\cdot$ Orchestrate}}
 
   \vspace{0.4cm}
   \rule{\linewidth}{1pt}
@@ -137,7 +140,7 @@
 
   \begin{tabular}{ll}
     \textbf{Nama Kelompok} & : cupuu \\[4pt]
-    \textbf{Judul Inovasi}  & : AEO — AI Exception Orchestrator \\[4pt]
+    \textbf{Judul Inovasi}  & : AEO: AI Exception Orchestrator \\[4pt]
     \textbf{Anggota Tim}   & : Frederick Allensius \\
                            & \phantom{: }Kang Nicholas Darren Nugroho \\
                            & \phantom{: }Ivan William Lianata \\
@@ -162,13 +165,13 @@
 
 Ekonomi digital Indonesia adalah yang terbesar di Asia Tenggara, dengan nilai transaksi bruto yang menurut laporan \textit{e-Conomy SEA} berada pada kisaran USD 90 miliar pada 2024 dan \textit{e-commerce} sebagai kontributor dominan~\cite{econsea}. Namun nilai transaksi hanyalah permukaan. Yang menopang angka tersebut adalah \textbf{rantai pasok}: jaringan pemasok, gudang, dan kurir yang harus mengeksekusi jutaan janji pengiriman setiap hari.
 
-Kerapuhan rantai pasok bukan isu baru: Christopher \& Peck~\cite{christopher} mendefinisikan \textit{resilience} sebagai kemampuan sistem kembali stabil setelah gangguan, sementara Tang~\cite{tang} menunjukkan strategi mitigasi statis tidak memadai karena gangguan bersifat multipenyebab dan saling bersusulan. Ivanov~\cite{ivanov} membuktikan secara kuantitatif bahwa satu gangguan lokal dapat merambat menjadi \textit{ripple effect} yang membesar di sepanjang rantai --- prinsip yang menjustifikasi mengapa \textbf{deteksi dini} pada level transaksi adalah syarat mutlak, bukan fitur tambahan.
+Kerapuhan rantai pasok bukan isu baru: Christopher \& Peck~\cite{christopher} mendefinisikan \textit{resilience} sebagai kemampuan sistem kembali stabil setelah gangguan, sementara Tang~\cite{tang} menunjukkan strategi mitigasi statis tidak memadai karena gangguan bersifat multipenyebab dan saling bersusulan. Ivanov~\cite{ivanov} membuktikan secara kuantitatif bahwa satu gangguan lokal dapat merambat menjadi \textit{ripple effect} yang membesar di sepanjang rantai: prinsip yang menjustifikasi mengapa \textbf{deteksi dini} pada level transaksi adalah syarat mutlak, bukan fitur tambahan.
 
-Janji itu sering gagal ditepati. Dalam operasional \textit{e-commerce} berskala besar, \textbf{eksepsi rantai pasok} — lonjakan permintaan mendadak (\textit{demand spike}), keterlambatan pemasok (\textit{supplier delay}), dan gangguan pengiriman (\textit{shipment delay}) — terjadi hampir setiap hari. Pada dataset Olist, dari 96.475 pesanan yang dianalisis, proporsi pesanan yang melewati tanggal estimasi pengiriman berada pada level dua digit persen. Literatur ekonomi retensi menunjukkan biaya akuisisi pelanggan baru jauh melampaui biaya retensi~\cite{reichheld}, dan bahwa nilai pelanggan harus dipandang sebagai aliran laba jangka panjang (\textit{customer lifetime value}), bukan transaksi tunggal~\cite{gupta}. Dengan kerangka itu, satu pesanan yang gagal adalah ancaman terhadap aliran laba multi-tahun yang direpresentasikan pelanggan tersebut.
+Janji itu sering gagal ditepati. Dalam operasional \textit{e-commerce} berskala besar, \textbf{eksepsi rantai pasok}: lonjakan permintaan mendadak (\textit{demand spike}), keterlambatan pemasok (\textit{supplier delay}), dan gangguan pengiriman (\textit{shipment delay}): terjadi hampir setiap hari. Pada dataset Olist, dari 96.475 pesanan yang dianalisis, proporsi pesanan yang melewati tanggal estimasi pengiriman berada pada level dua digit persen. Literatur ekonomi retensi menunjukkan biaya akuisisi pelanggan baru jauh melampaui biaya retensi~\cite{reichheld}, dan bahwa nilai pelanggan harus dipandang sebagai aliran laba jangka panjang (\textit{customer lifetime value}), bukan transaksi tunggal~\cite{gupta}. Dengan kerangka itu, satu pesanan yang gagal adalah ancaman terhadap aliran laba multi-tahun yang direpresentasikan pelanggan tersebut.
 
 \subsection{Masalah: Bukan Kekurangan Data, Melainkan Kekurangan Respons}
 
-Perusahaan besar sudah punya \textit{dashboard}. Yang tidak mereka punya adalah \textbf{jembatan dari sinyal ke keputusan}. Ketika sebuah anomali muncul di layar, operator masih harus mengerjakan empat hal secara manual dan berurutan: menafsirkan apakah ini benar masalah, memperkirakan seberapa mahal dampaknya, memikirkan opsi pemulihan, lalu menghubungi pelanggan. Rangkaian ini memakan waktu berjam-jam, dan selama itu --- sejalan dengan mekanisme perambatan gangguan Ivanov~\cite{ivanov} --- kerugian terus membesar, bukan tetap konstan.
+Perusahaan besar sudah punya \textit{dashboard}. Yang tidak mereka punya adalah \textbf{jembatan dari sinyal ke keputusan}. Ketika sebuah anomali muncul di layar, operator masih harus mengerjakan empat hal secara manual dan berurutan: menafsirkan apakah ini benar masalah, memperkirakan seberapa mahal dampaknya, memikirkan opsi pemulihan, lalu menghubungi pelanggan. Rangkaian ini memakan waktu berjam-jam, dan selama itu: sejalan dengan mekanisme perambatan gangguan Ivanov~\cite{ivanov}: kerugian terus membesar, bukan tetap konstan.
 
 Kami mengidentifikasi rantai kegagalan tersebut menjadi tiga kesenjangan spesifik yang saling memperkuat:
 
@@ -195,7 +198,7 @@ Kami mengidentifikasi rantai kegagalan tersebut menjadi tiga kesenjangan spesifi
     \node[lbl, above=1.5mm of g2] {tahap 2};
     \node[lbl, above=1.5mm of g3] {tahap 3};
   \end{tikzpicture}}
-  \caption{Rantai kesenjangan dalam penanganan eksepsi rantai pasok. Ketiganya bersifat berurutan --- menutup satu saja tidak memutus rantai kerugian.}
+  \caption{Rantai kesenjangan dalam penanganan eksepsi rantai pasok. Ketiganya bersifat berurutan: menutup satu saja tidak memutus rantai kerugian.}
   \label{fig:gap}
 \end{figure}
 
@@ -223,7 +226,7 @@ Kategori perangkat lunak rantai pasok bukan ruang kosong. Kami memetakan tiga ke
       & Ambang statis, tidak belajar dari pola historis, dan tidak menimbang \textit{trade-off} biaya antar opsi pemulihan. \\
     \midrule
     \textbf{AEO}
-      & \multicolumn{2}{Y}{\textbf{Mengisi celah di antara ketiganya:} berorientasi respons insiden (bukan perencanaan), berhenti bukan di notifikasi melainkan di \textbf{opsi aksi terurut dengan angka rupiah}, dan menggunakan model yang belajar dari data historis alih-alih ambang statis --- sambil tetap menempatkan operator sebagai pengambil keputusan akhir.} \\
+      & \multicolumn{2}{Y}{\textbf{Mengisi celah di antara ketiganya:} berorientasi respons insiden (bukan perencanaan), berhenti bukan di notifikasi melainkan di \textbf{opsi aksi terurut dengan angka rupiah}, dan menggunakan model yang belajar dari data historis alih-alih ambang statis: sambil tetap menempatkan operator sebagai pengambil keputusan akhir.} \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -232,7 +235,7 @@ Kategori perangkat lunak rantai pasok bukan ruang kosong. Kami memetakan tiga ke
 
 Masalah ini mendesak karena tiga alasan: marjin \textit{e-commerce} yang tipis membuat kompensasi keterlambatan langsung menggerus profitabilitas; biaya akuisisi pelanggan jauh melampaui biaya retensi sehingga kehilangan pelanggan adalah kerugian majemuk; dan geografi kepulauan Indonesia membuat rantai pasok secara struktural lebih rentan terhadap gangguan multimoda dibanding negara daratan.
 
-Meski dirancang dengan konteks Indonesia, masalah yang ditangani bersifat universal --- setiap operasi \textit{e-commerce} lintas negara menghadapi eksepsi pemasok, lonjakan permintaan, dan gangguan logistik. Arsitektur AEO tidak mengandung asumsi khas Indonesia pada lapisan modelnya; lokalisasi hanya menyentuh mata uang, bahasa pesan pelanggan, dan kalender musim belanja. Inilah yang membuatnya dapat direplikasi ke pasar lain tanpa perombakan model.
+Meski dirancang dengan konteks Indonesia, masalah yang ditangani bersifat universal: setiap operasi \textit{e-commerce} lintas negara menghadapi eksepsi pemasok, lonjakan permintaan, dan gangguan logistik. Arsitektur AEO tidak mengandung asumsi khas Indonesia pada lapisan modelnya; lokalisasi hanya menyentuh mata uang, bahasa pesan pelanggan, dan kalender musim belanja. Inilah yang membuatnya dapat direplikasi ke pasar lain tanpa perombakan model.
 
 % ===========================================================
 \section{Tujuan dan Manfaat Pengembangan}
@@ -242,7 +245,7 @@ Meski dirancang dengan konteks Indonesia, masalah yang ditangani bersifat univer
 \begin{enumerate}
   \item Membangun \textit{ensemble} deteksi anomali yang mengidentifikasi lonjakan permintaan, keterlambatan pemasok, dan gangguan pengiriman secara \textbf{independen dan simultan}, sehingga satu jenis eksepsi tidak menutupi jenis lain.
 
-  \item Mengkuantifikasi dampak setiap eksepsi menjadi \textbf{angka rupiah}, agar prioritisasi mengikuti besaran kerugian --- bukan urutan kemunculan di layar.
+  \item Mengkuantifikasi dampak setiap eksepsi menjadi \textbf{angka rupiah}, agar prioritisasi mengikuti besaran kerugian: bukan urutan kemunculan di layar.
 
   \item Mengotomasi pemilihan aksi pemulihan melalui \textit{constraint programming}, sehingga opsi yang direkomendasikan terbukti minimum secara matematis di antara kandidat yang layak.
 
@@ -287,7 +290,7 @@ Dataset yang digunakan adalah \textbf{Olist Brazilian E-Commerce Public Dataset}
 
 Pemilihan ini adalah keputusan sadar dengan \textit{trade-off} yang kami akui terbuka. Tidak tersedia dataset publik \textit{e-commerce} Indonesia yang memuat \textbf{empat kolom yang mutlak dibutuhkan} secara bersamaan: waktu estimasi pengiriman, waktu pengiriman aktual, identitas penjual, dan skor ulasan. Tanpa keempatnya, label SLA \textit{breach} dan label risiko churn tidak dapat dibentuk sama sekali.
 
-\textbf{Keterbatasan yang kami sadari:} struktur biaya logistik dan perilaku pelanggan Brasil tidak identik dengan Indonesia, sehingga konversi mata uang diperlakukan sebagai \textbf{faktor demonstrasi yang dapat dikonfigurasi}, bukan klaim akurasi finansial. Yang kami ambil dari Olist adalah \textbf{struktur relasional dan pola statistiknya} --- keterlambatan berdistribusi \textit{right-skewed}, keandalan pemasok bervariasi tajam antar penjual, dan ulasan buruk berkorelasi dengan keterlambatan. Ketiga pola ini universal, dan itulah yang dipelajari model.
+\textbf{Keterbatasan yang kami sadari:} struktur biaya logistik dan perilaku pelanggan Brasil tidak identik dengan Indonesia, sehingga konversi mata uang diperlakukan sebagai \textbf{faktor demonstrasi yang dapat dikonfigurasi}, bukan klaim akurasi finansial. Yang kami ambil dari Olist adalah \textbf{struktur relasional dan pola statistiknya}: keterlambatan berdistribusi \textit{right-skewed}, keandalan pemasok bervariasi tajam antar penjual, dan ulasan buruk berkorelasi dengan keterlambatan. Ketiga pola ini universal, dan itulah yang dipelajari model.
 
 \subsubsection{Komposisi Dataset dan Alur Prapemrosesan}
 
@@ -421,23 +424,23 @@ Setiap pilihan algoritma diambil melalui pertimbangan eksplisit terhadap alterna
     \midrule
     Deteksi
       & Isolation Forest~\cite{iforest,iforesttkdd}
-      & \textit{Autoencoder}/LSTM ditolak: sejalan dengan tinjauan Chandola dkk.~\cite{chandola}, keunggulannya baru terasa pada data berdimensi sangat tinggi, bukan tabel fitur beragregasi seperti milik kami. Isolation Forest dipilih karena tidak memerlukan label anomali --- kritis, karena label eksepsi tidak tersedia --- dan isolasi rekursifnya lebih efisien dibanding pendekatan berbasis jarak/kepadatan~\cite{iforest}. \\[1.5pt]
+      & \textit{Autoencoder}/LSTM ditolak: sejalan dengan tinjauan Chandola dkk.~\cite{chandola}, keunggulannya baru terasa pada data berdimensi sangat tinggi, bukan tabel fitur beragregasi seperti milik kami. Isolation Forest dipilih karena tidak memerlukan label anomali: kritis, karena label eksepsi tidak tersedia: dan isolasi rekursifnya lebih efisien dibanding pendekatan berbasis jarak/kepadatan~\cite{iforest}. \\[1.5pt]
     Kuantifikasi
       & LightGBM~\cite{lightgbm}
-      & Regresi linear ditolak: hubungan \texttt{delay\_days} terhadap kerugian tidak linear. \textit{Deep learning} ditolak: pada data tabular menengah, \textit{gradient boosting} umumnya unggul dengan biaya latih jauh lebih rendah~\cite{lightgbm}. LightGBM dipilih atas XGBoost~\cite{xgboost} karena dua teknik yang diklaim mempercepat pelatihan tanpa kehilangan akurasi berarti pada data tabular berukuran menengah seperti milik kami --- \textit{Gradient-based One-Side Sampling} (GOSS) dan \textit{Exclusive Feature Bundling} (EFB)~\cite{lightgbm}. \\[1.5pt]
+      & Regresi linear ditolak: hubungan \texttt{delay\_days} terhadap kerugian tidak linear. \textit{Deep learning} ditolak: pada data tabular menengah, \textit{gradient boosting} umumnya unggul dengan biaya latih jauh lebih rendah~\cite{lightgbm}. LightGBM dipilih atas XGBoost~\cite{xgboost} karena dua teknik yang diklaim mempercepat pelatihan tanpa kehilangan akurasi berarti pada data tabular berukuran menengah seperti milik kami: \textit{Gradient-based One-Side Sampling} (GOSS) dan \textit{Exclusive Feature Bundling} (EFB)~\cite{lightgbm}. \\[1.5pt]
     Optimasi
       & OR-Tools CP-SAT~\cite{ortools}
       & \textit{Greedy} ditolak: tidak menjamin optimalitas dan tidak menangani kendala kelayakan. \textit{Constraint programming}~\cite{wolsey} memberi \textbf{jaminan optimalitas} dengan kendala deklaratif yang mudah diperluas; CP-SAT memadukan \textit{constraint propagation} dengan SAT modern~\cite{ortools}. \\[1.5pt]
     Mitigasi
       & LightGBM + LLM
-      & Template statis ditolak: terbaca robotik --- sejalan dengan Verbeke dkk.~\cite{verbeke} bahwa prediksi churn baru bernilai bisnis bila diikuti aksi retensi personal, bukan komunikasi generik. LLM \textit{fine-tune} penuh ditolak: berlebihan untuk pesan pendek; \textit{prompt} terstruktur bersuhu terkendali sudah memadai dan jauh lebih murah. \\
+      & Template statis ditolak: terbaca robotik: sejalan dengan Verbeke dkk.~\cite{verbeke} bahwa prediksi churn baru bernilai bisnis bila diikuti aksi retensi personal, bukan komunikasi generik. LLM \textit{fine-tune} penuh ditolak: berlebihan untuk pesan pendek; \textit{prompt} terstruktur bersuhu terkendali sudah memadai dan jauh lebih murah. \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
 \subsubsection{Tahap 1: Deteksi Anomali (Isolation Forest)}
 
-Tahap pertama memakai tiga detektor terpisah, mengikuti kaidah Chandola dkk.~\cite{chandola} bahwa pemilihan teknik deteksi anomali harus mempertimbangkan ketersediaan label serta granularitas yang relevan secara domain. Keputusan memisahkan --- alih-alih satu model besar multi-kelas --- diambil karena ketiga sinyal beroperasi pada \textbf{granularitas entitas yang berbeda}: produk per hari, penjual, dan pesanan. Menggabungkannya akan memaksa agregasi yang menghilangkan resolusi sinyal.
+Tahap pertama memakai tiga detektor terpisah, mengikuti kaidah Chandola dkk.~\cite{chandola} bahwa pemilihan teknik deteksi anomali harus mempertimbangkan ketersediaan label serta granularitas yang relevan secara domain. Keputusan memisahkan: alih-alih satu model besar multi-kelas: diambil karena ketiga sinyal beroperasi pada \textbf{granularitas entitas yang berbeda}: produk per hari, penjual, dan pesanan. Menggabungkannya akan memaksa agregasi yang menghilangkan resolusi sinyal.
 
 \begin{figure}[H]
   \centering
@@ -475,7 +478,7 @@ Tahap pertama memakai tiga detektor terpisah, mengikuti kaidah Chandola dkk.~\ci
 \begin{enumerate}
   \item \textbf{Normalisasi sigmoid pada skor mentah.} Keluaran asli \texttt{decision\_function} Isolation Forest adalah bilangan riil tak terbatas yang tidak dapat diinterpretasi operator maupun dibandingkan antar detektor. Kami memetakannya ke $[0,1]$ melalui $p = 1/(1+e^{3s})$. Faktor pengali 3 dipilih karena nilai lebih rendah membuat distribusi skor terlalu datar (hampir semua kasus jatuh di sekitar 0,5 sehingga tidak diskriminatif), sedangkan nilai lebih tinggi melempar kasus \textit{borderline} langsung ke ekstrem.
 
-  \item \textbf{Arsitektur hibrida pada SupplierDelayDetector.} Detektor ini memadukan Isolation Forest atas riwayat penjual dengan \textit{z-score} atas \textit{lead time} berbobot 0,5/0,5. Alasannya operasional, bukan statistik: keterlambatan pemasok adalah eksepsi yang \textbf{paling sering dipertanyakan operator} karena berimplikasi pada hubungan dagang. Komponen \textit{z-score} memberi penjelasan yang dapat diucapkan --- ``pemasok ini 3,2 simpangan baku lebih lambat dari biasanya'' --- sementara Isolation Forest menangkap pola multivariat yang luput dari aturan tunggal.
+  \item \textbf{Arsitektur hibrida pada SupplierDelayDetector.} Detektor ini memadukan Isolation Forest atas riwayat penjual dengan \textit{z-score} atas \textit{lead time} berbobot 0,5/0,5. Alasannya operasional, bukan statistik: keterlambatan pemasok adalah eksepsi yang \textbf{paling sering dipertanyakan operator} karena berimplikasi pada hubungan dagang. Komponen \textit{z-score} memberi penjelasan yang dapat diucapkan: ``pemasok ini 3,2 simpangan baku lebih lambat dari biasanya'': sementara Isolation Forest menangkap pola multivariat yang luput dari aturan tunggal.
 \end{enumerate}
 
 Ambang \textit{contamination} dibedakan: 5\% untuk lonjakan permintaan (kejadian benar-benar jarang) dan 10\% untuk keterlambatan (proporsi bermasalah secara empiris lebih tinggi pada data). Ketiga model disimpan sebagai berkas \texttt{.pkl} dan dimuat secara \textit{lazy} saat pertama dipanggil.
@@ -497,7 +500,7 @@ Dua model LightGBM terpisah menjawab dua pertanyaan berbeda, dan pemisahan ini d
     Himpunan latih & Seluruh pesanan berlabel \texttt{sla\_breach} & Hanya pesanan dengan \texttt{sla\_breach} $=1$ \\
     \textit{Learning rate} & 0,05 & 0,05 \\
     \textit{num\_leaves} & 31 & 31 \\
-    Regularisasi   & \texttt{feature\_fraction} 0,8; \texttt{bagging\_fraction} 0,8 & --- \\
+    Regularisasi   & \texttt{feature\_fraction} 0,8; \texttt{bagging\_fraction} 0,8 &: \\
     \textit{Early stopping} & 30 ronde & 30 ronde \\
     Keluaran       & Probabilitas $[0,1]$ & Kerugian per pesanan, dikonversi ke IDR \\
     \bottomrule
@@ -508,7 +511,7 @@ Fungsi kerugian \textit{proxy} dirumuskan sebagai
 \[
   \text{loss} = \text{order\_value} \times \min\bigl(\max(\text{delay\_days},\,0) \times 0{,}05,\ 0{,}5\bigr),
 \]
-yaitu setiap hari keterlambatan menambah 5\% nilai pesanan sebagai potensi kompensasi, dibatasi maksimum 50\%. \textbf{Kami menyatakan secara terbuka bahwa kedua konstanta ini adalah asumsi kebijakan, bukan hasil estimasi dari data.} Batas atas 50\% dipilih karena melampaui itu, kompensasi menjadi tidak rasional secara bisnis dibanding sekadar membatalkan dan mengembalikan dana penuh. Pada penerapan nyata, kedua konstanta harus diganti dengan tabel kompensasi aktual perusahaan --- keduanya diisolasi sebagai parameter tunggal di kode agar penggantian bersifat satu baris.
+yaitu setiap hari keterlambatan menambah 5\% nilai pesanan sebagai potensi kompensasi, dibatasi maksimum 50\%. \textbf{Kami menyatakan secara terbuka bahwa kedua konstanta ini adalah asumsi kebijakan, bukan hasil estimasi dari data.} Batas atas 50\% dipilih karena melampaui itu, kompensasi menjadi tidak rasional secara bisnis dibanding sekadar membatalkan dan mengembalikan dana penuh. Pada penerapan nyata, kedua konstanta harus diganti dengan tabel kompensasi aktual perusahaan: keduanya diisolasi sebagai parameter tunggal di kode agar penggantian bersifat satu baris.
 
 \subsubsection{Tahap 3: Optimasi Pemulihan (OR-Tools CP-SAT)}
 
@@ -551,7 +554,7 @@ Formulasi ini mengikuti kerangka baku pemrograman bilangan bulat~\cite{wolsey}: 
 \]
 dengan $f_i$ kelayakan, $\ell_i$ \textit{lead time} kandidat, $\Delta$ toleransi keterlambatan, dan $K=1000$ faktor skala ke bilangan bulat.
 
-\textbf{Tiga keputusan desain} pada formulasi ini perlu dijelaskan. \textbf{Pertama}, penskalaan $K=1000$ diperlukan karena CP-SAT bekerja pada domain bilangan bulat sementara nilai kerugian berada pada orde ratusan juta rupiah; tanpa penskalaan, ruang pencarian membengkak tanpa manfaat presisi. \textbf{Kedua}, penalti \textit{lead time} diberi pengali $10^6$ agar bersifat mendekati kendala keras --- opsi yang datang terlambat dari batas toleransi praktis tidak akan pernah terpilih, tetapi tetap muncul di daftar agar operator melihat bahwa opsi itu dipertimbangkan dan ditolak. \textbf{Ketiga}, batas waktu solver satu detik ditetapkan agar keseluruhan respons API tetap berada dalam rentang interaktif; untuk ruang kandidat sekecil ini, CP-SAT mencapai optimalitas jauh di bawah batas tersebut.
+\textbf{Tiga keputusan desain} pada formulasi ini perlu dijelaskan. \textbf{Pertama}, penskalaan $K=1000$ diperlukan karena CP-SAT bekerja pada domain bilangan bulat sementara nilai kerugian berada pada orde ratusan juta rupiah; tanpa penskalaan, ruang pencarian membengkak tanpa manfaat presisi. \textbf{Kedua}, penalti \textit{lead time} diberi pengali $10^6$ agar bersifat mendekati kendala keras: opsi yang datang terlambat dari batas toleransi praktis tidak akan pernah terpilih, tetapi tetap muncul di daftar agar operator melihat bahwa opsi itu dipertimbangkan dan ditolak. \textbf{Ketiga}, batas waktu solver satu detik ditetapkan agar keseluruhan respons API tetap berada dalam rentang interaktif; untuk ruang kandidat sekecil ini, CP-SAT mencapai optimalitas jauh di bawah batas tersebut.
 
 \subsubsection{Tahap 4: Autonomous Commerce Mitigation (LightGBM + Gemini 2.5 Flash)}
 
@@ -559,9 +562,9 @@ Modul ACM menangani konsekuensi yang paling sering diabaikan sistem rantai pasok
 
 \textbf{(a) ChurnPredictionModel.} Pengklasifikasi biner LightGBM (\texttt{num\_leaves} 15, \textit{learning rate} 0,05, \textit{early stopping} 20 ronde) atas fitur \texttt{order\_count}, \texttt{total\_spend\_log}, \texttt{avg\_review}, \texttt{late\_deliveries}, dan \texttt{clv\_score}. Parameter \texttt{num\_leaves} sengaja dibuat separuh dari model dampak: jumlah pelanggan jauh lebih sedikit dari jumlah pesanan, sehingga kapasitas model yang lebih besar akan \textit{overfit}.
 
-Label churn dibentuk sebagai \textit{proxy} orisinal tim: pelanggan ditandai berisiko jika \texttt{avg\_review} $< 3{,}5$ \textbf{atau} \texttt{late\_deliveries} $> 1$. Disjungsi dipilih sengaja karena keduanya jalur kekecewaan independen --- pelanggan bisa kecewa karena kualitas produk meski pengiriman lancar, atau sebaliknya. Mensyaratkan keduanya sekaligus akan melewatkan sebagian besar populasi berisiko, konsisten dengan Verbeke dkk.~\cite{verbeke} bahwa performa prediksi churn bergantung pada fitur perilaku yang menangkap lebih dari satu jalur ketidakpuasan.
+Label churn dibentuk sebagai \textit{proxy} orisinal tim: pelanggan ditandai berisiko jika \texttt{avg\_review} $< 3{,}5$ \textbf{atau} \texttt{late\_deliveries} $> 1$. Disjungsi dipilih sengaja karena keduanya jalur kekecewaan independen: pelanggan bisa kecewa karena kualitas produk meski pengiriman lancar, atau sebaliknya. Mensyaratkan keduanya sekaligus akan melewatkan sebagian besar populasi berisiko, konsisten dengan Verbeke dkk.~\cite{verbeke} bahwa performa prediksi churn bergantung pada fitur perilaku yang menangkap lebih dari satu jalur ketidakpuasan.
 
-\textbf{(b) Sistem voucher bertingkat berbasis CLV.} Segmentasi kompensasi mengikuti prinsip pemasaran berbasis CLV: nilai pelanggan bervariasi tajam antar segmen dan alokasi retensi seharusnya proporsional terhadapnya, bukan seragam~\cite{gupta,fader}. Fader, Hardie, \& Lee~\cite{fader} menunjukkan skor \textit{RFM} dapat dipetakan menjadi kurva nilai berjenjang --- struktur yang sejalan dengan tiga tingkatan voucher kami.
+\textbf{(b) Sistem voucher bertingkat berbasis CLV.} Segmentasi kompensasi mengikuti prinsip pemasaran berbasis CLV: nilai pelanggan bervariasi tajam antar segmen dan alokasi retensi seharusnya proporsional terhadapnya, bukan seragam~\cite{gupta,fader}. Fader, Hardie, \& Lee~\cite{fader} menunjukkan skor \textit{RFM} dapat dipetakan menjadi kurva nilai berjenjang: struktur yang sejalan dengan tiga tingkatan voucher kami.
 
 \begin{table}[H]
   \centering\footnotesize
@@ -577,17 +580,17 @@ Label churn dibentuk sebagai \textit{proxy} orisinal tim: pelanggan ditandai ber
   \end{tabular}
 \end{table}
 
-Manfaat bersih dihitung sebagai $\max(0,\ \text{churn\_cost} - \text{intervention\_cost})$, dengan $\text{churn\_cost} = p_{\text{sla}} \times \text{affected\_customers} \times \text{avg\_order\_value} \times 0{,}3$. Faktor 0,3 merepresentasikan porsi nilai pelanggan yang hilang bila churn terjadi dan --- sebagaimana konstanta kerugian pada Tahap 2 --- merupakan asumsi kebijakan yang dapat dikonfigurasi, bukan hasil estimasi data.
+Manfaat bersih dihitung sebagai $\max(0,\ \text{churn\_cost} - \text{intervention\_cost})$, dengan $\text{churn\_cost} = p_{\text{sla}} \times \text{affected\_customers} \times \text{avg\_order\_value} \times 0{,}3$. Faktor 0,3 merepresentasikan porsi nilai pelanggan yang hilang bila churn terjadi dan: sebagaimana konstanta kerugian pada Tahap 2: merupakan asumsi kebijakan yang dapat dikonfigurasi, bukan hasil estimasi data.
 
 \textbf{(c) Integrasi Gemini 2.5 Flash.} Tiga endpoint memakai modul \texttt{models/llm.py} yang memanggil Gemini melalui \textbf{REST murni} (\texttt{urllib.request}) tanpa SDK, sehingga tidak menambah satu pun dependensi \textit{pip}:
 
 \begin{itemize}
-  \item \texttt{/api/explain} --- penjelasan tiga kalimat (suhu 0,3) mengapa opsi terpilih meminimalkan biaya total, bagaimana ia menurunkan risiko SLA, dan kendala utama yang menentukan pilihan. Suhu rendah dipilih karena keluaran harus konsisten dan faktual.
-  \item \texttt{/api/acm/message} --- pesan WhatsApp siap kirim berbahasa Indonesia (suhu 0,7). Suhu lebih tinggi dipilih agar pesan tidak terbaca seragam antar pelanggan.
-  \item \texttt{/api/market-sentiment} --- klasifikasi ruang lingkup gangguan, lokal atau berskala industri (suhu 0,4).
+  \item \texttt{/api/explain}: penjelasan tiga kalimat (suhu 0,3) mengapa opsi terpilih meminimalkan biaya total, bagaimana ia menurunkan risiko SLA, dan kendala utama yang menentukan pilihan. Suhu rendah dipilih karena keluaran harus konsisten dan faktual.
+  \item \texttt{/api/acm/message}: pesan WhatsApp siap kirim berbahasa Indonesia (suhu 0,7). Suhu lebih tinggi dipilih agar pesan tidak terbaca seragam antar pelanggan.
+  \item \texttt{/api/market-sentiment}: klasifikasi ruang lingkup gangguan, lokal atau berskala industri (suhu 0,4).
 \end{itemize}
 
-Seluruhnya memiliki \textbf{fallback terstruktur}: bila \texttt{GEMINI\_API\_KEY} tidak tersedia atau kuota habis, fungsi mengembalikan template yang tetap berisi angka nyata dari pipeline --- bukan pesan galat. Ini konsekuensi langsung dari prinsip bahwa lapisan LLM bersifat menambah nilai penyajian, bukan menjadi titik kegagalan tunggal.
+Seluruhnya memiliki \textbf{fallback terstruktur}: bila \texttt{GEMINI\_API\_KEY} tidak tersedia atau kuota habis, fungsi mengembalikan template yang tetap berisi angka nyata dari pipeline: bukan pesan galat. Ini konsekuensi langsung dari prinsip bahwa lapisan LLM bersifat menambah nilai penyajian, bukan menjadi titik kegagalan tunggal.
 
 \subsection{Alur Integrasi Model ke Environment Kode}
 
@@ -600,11 +603,11 @@ Seluruhnya memiliki \textbf{fallback terstruktur}: bila \texttt{GEMINI\_API\_KEY
   \begin{tikzpicture}[node distance=7mm]
     % FE
     \node[nd, fill=darknavy!7, minimum width=11.6cm, minimum height=1.15cm] (fe)
-      {\textbf{Frontend} --- React + Vite + TanStack Router + ShadCN \quad(\textit{port} 3000)};
+      {\textbf{Frontend}: React + Vite + TanStack Router + ShadCN \quad(\textit{port} 3000)};
     % API
     \node[nd, fill=accentgreen!12, draw=accentgreen!65, minimum width=11.6cm,
           minimum height=1.15cm, below=7mm of fe] (api)
-      {\textbf{Lapisan API} --- FastAPI, Python 3.11 \quad(\textit{port} 8000) \quad · \quad REST/JSON, sinkron};
+      {\textbf{Lapisan API}: FastAPI, Python 3.11 \quad(\textit{port} 8000) \quad · \quad REST/JSON, sinkron};
     % Models
     \node[nd, fill=softgrey, minimum width=2.6cm, below=9mm of api, xshift=-4.4cm] (m1) {Deteksi\\\scriptsize 3 detektor};
     \node[nd, fill=softgrey, minimum width=2.6cm, right=4mm of m1] (m2) {Dampak\\\scriptsize 2 LightGBM};
@@ -612,7 +615,7 @@ Seluruhnya memiliki \textbf{fallback terstruktur}: bila \texttt{GEMINI\_API\_KEY
     \node[nd, fill=softgrey, minimum width=2.6cm, right=4mm of m3] (m4) {ACM\\\scriptsize LGBM + LLM};
     % Artifacts
     \node[dat, minimum width=11.6cm, below=8mm of m2, xshift=2.7cm] (art)
-      {\textbf{models/artifacts/} --- 6 berkas \texttt{.pkl}, dimuat \textit{lazy} saat pemanggilan pertama};
+      {\textbf{models/artifacts/}: 6 berkas \texttt{.pkl}, dimuat \textit{lazy} saat pemanggilan pertama};
 
     \draw[ar] (fe) -- node[lbl, right=1mm] {HTTP} (api);
     \foreach \i in {1,2,3,4} { \draw[ar] (api.south) -- (m\i.north); }
@@ -623,11 +626,11 @@ Seluruhnya memiliki \textbf{fallback terstruktur}: bila \texttt{GEMINI\_API\_KEY
             fit=(api)(m1)(m4)(art), label={[lbl, anchor=north west]north west:\ Kontainer \textit{backend}}] {};
     \end{scope}
   \end{tikzpicture}}
-  \caption{Arsitektur dua-tier. Lapisan model terpisah bersih dari lapisan API --- setiap model hanya mengekspos metode \texttt{predict()} atau \texttt{score()} dan tidak mengetahui keberadaan HTTP.}
+  \caption{Arsitektur dua-tier. Lapisan model terpisah bersih dari lapisan API: setiap model hanya mengekspos metode \texttt{predict()} atau \texttt{score()} dan tidak mengetahui keberadaan HTTP.}
   \label{fig:arch}
 \end{figure}
 
-Pemisahan pada Gambar~\ref{fig:arch} bukan sekadar penataan berkas: model dapat diuji tanpa menjalankan server, dan lapisan API dapat diganti tanpa menyentuh kode model. Inilah yang kami maksud dengan modularitas --- ketiadaan kebergantungan melingkar antar lapisan.
+Pemisahan pada Gambar~\ref{fig:arch} bukan sekadar penataan berkas: model dapat diuji tanpa menjalankan server, dan lapisan API dapat diganti tanpa menyentuh kode model. Inilah yang kami maksud dengan modularitas: ketiadaan kebergantungan melingkar antar lapisan.
 
 \subsubsection{Alur Integrasi Langkah demi Langkah}
 
@@ -638,7 +641,7 @@ Pemisahan pada Gambar~\ref{fig:arch} bukan sekadar penataan berkas: model dapat 
 
   \item \textbf{Orkestrasi endpoint.} \texttt{GET /api/exceptions/demo} menjalankan pipeline penuh untuk tiga skenario dan mengembalikan antrian eksepsi yang telah lengkap dianalisis dalam satu respons.
 
-  \item \textbf{Persetujuan Human-in-the-Loop.} Operator meninjau detail eksepsi beserta rekomendasi. Tombol persetujuan hanya mengubah status di \texttt{localStorage} --- \textbf{tidak ada integrasi ERP/WMS pada MVP}, sesuai batasan ruang lingkup. Seluruh pemrosesan bersifat \textbf{sinkron}: setiap panggilan API selesai dalam satu siklus \textit{request--response}, tanpa \textit{background job}, antrian pesan, maupun basis data terdistribusi.
+  \item \textbf{Persetujuan Human-in-the-Loop.} Operator meninjau detail eksepsi beserta rekomendasi. Tombol persetujuan hanya mengubah status di \texttt{localStorage}: \textbf{tidak ada integrasi ERP/WMS pada MVP}, sesuai batasan ruang lingkup. Seluruh pemrosesan bersifat \textbf{sinkron}: setiap panggilan API selesai dalam satu siklus \textit{request--response}, tanpa \textit{background job}, antrian pesan, maupun basis data terdistribusi.
 
   \item \textbf{Deployment.} Satu perintah \texttt{docker compose up --build} menjalankan kedua layanan. Frontend di \textit{port} 3000, backend di 8000, dan dokumentasi Swagger di \texttt{/docs}.
 \end{enumerate}
@@ -692,6 +695,18 @@ Pemisahan pada Gambar~\ref{fig:arch} bukan sekadar penataan berkas: model dapat 
   \end{tabularx}
 \end{table}
 
+\subsubsection{Detail Skema Request dan Response}
+
+\paragraph{\texttt{POST /api/detect}} Menerima \texttt{exception\_type} (\texttt{supplier\_delay} / \texttt{demand\_spike} / \texttt{shipment\_delay}) beserta fitur numerik sesuai tipe: untuk \textit{demand spike} dibutuhkan \texttt{order\_count}, \texttt{rolling\_mean}, \texttt{rolling\_std}; untuk \textit{supplier delay} dibutuhkan \texttt{predicted\_delay\_hours}, \texttt{historical\_mean\_days}, \texttt{historical\_std\_days}, \texttt{supplier\_reliability}; untuk \textit{shipment delay} dibutuhkan \texttt{carrier\_delay\_days}, \texttt{item\_count}, \texttt{order\_value}. Response: \texttt{anomaly\_score} [0--1], \texttt{z\_score}, \texttt{is\_anomaly}, \texttt{severity} (critical/high/medium), \texttt{confidence}, \texttt{source} (model/demo\_fallback).
+
+\paragraph{\texttt{POST /api/impact}} Menerima \texttt{exception\_type}, \texttt{delay\_days}, \texttt{carrier\_delay\_days}, \texttt{item\_count}, \texttt{order\_value}, \texttt{purchase\_hour}, \texttt{purchase\_dow}, \texttt{purchase\_month}, \texttt{affected\_orders}, \texttt{scale\_factor}. LightGBM menghasilkan response: \texttt{sla\_breach\_prob} [0--1], \texttt{expected\_loss\_idr} (integer Rupiah), \texttt{affected\_orders}, \texttt{source}.
+
+\paragraph{\texttt{POST /api/optimize}} Menerima \texttt{exception\_type}, \texttt{required\_units}, \texttt{baseline\_loss}, \texttt{sla\_penalty\_per\_unit}, \texttt{delay\_hours}, \texttt{inventory\_cover\_days}, \texttt{affected\_orders}. CP-SAT menghasilkan daftar opsi, masing-masing berisi \texttt{id}, \texttt{label}, \texttt{summary}, \texttt{expected\_loss\_idr}, \texttt{sla\_risk}, \texttt{lead\_time\_hours}, \texttt{extra\_cost\_idr}, \texttt{feasibility} [0--1], \texttt{recommended} (boolean). Field \texttt{objective} dan \texttt{solver} disertakan sebagai metadata transparansi.
+
+\paragraph{\texttt{POST /api/acm}} Menerima \texttt{sla\_breach\_prob}, \texttt{affected\_customers}, \texttt{avg\_clv\_score}, \texttt{high\_clv\_count}, \texttt{exception\_type}, \texttt{delay\_hours}. Response: \texttt{churn\_probability}, \texttt{customers\_at\_risk}, \texttt{voucher\_amount\_idr}, \texttt{net\_benefit\_idr}, \texttt{dynamic\_pricing\_uplift\_pct}, \texttt{recommended\_action}.
+
+\paragraph{\texttt{POST /api/explain} dan \texttt{/api/acm/message}} \texttt{/api/explain} menerima field rekap solver (label opsi terpilih, kerugian, SLA risk, top drivers) dan mengembalikan \texttt{bullets[]} berisi tiga kalimat penjelasan dari Gemini Flash 2.0 (fallback template jika API key tidak tersedia). \texttt{/api/acm/message} menerima \texttt{exception\_type}, \texttt{delay\_hours}, \texttt{voucher\_amount\_idr}, \texttt{customer\_segment} dan mengembalikan \texttt{message} berbahasa Indonesia siap kirim.
+
 % ===========================================================
 \section{Metode Pendukung Pengambilan Keputusan}
 
@@ -715,16 +730,16 @@ Batas atas 2\% ditetapkan secara sadar: di atas itu, penyesuaian harga berisiko 
 
 \subsection{Competitor-Aware Dynamic Sourcing}
 
-Endpoint \texttt{/api/market-sentiment} mengklasifikasikan apakah gangguan bersifat lokal atau berskala industri. Perbedaannya menentukan respons: gangguan lokal cukup ditangani reaktif (pemasok cadangan, \textit{rebalancing}), sedangkan gangguan industri menuntut respons proaktif (pemesanan awal, renegosiasi kontrak) --- lapisan intelijen yang tidak tersedia pada sistem pemantauan konvensional.
+Endpoint \texttt{/api/market-sentiment} mengklasifikasikan apakah gangguan bersifat lokal atau berskala industri. Perbedaannya menentukan respons: gangguan lokal cukup ditangani reaktif (pemasok cadangan, \textit{rebalancing}), sedangkan gangguan industri menuntut respons proaktif (pemesanan awal, renegosiasi kontrak): lapisan intelijen yang tidak tersedia pada sistem pemantauan konvensional.
 
 \subsection{Demo Fallback dan Konvensi Pengembangan}
 
-AEO menerapkan \textit{fallback} berlapis: setiap endpoint memeriksa keberadaan artefak model dan mengembalikan nilai demonstrasi berlabel \texttt{"source": "demo\_fallback"} bila belum tersedia; lapisan LLM memiliki template terstruktur; dan CP-SAT memakai kandidat terdefinisi sehingga rekomendasi selalu tersedia. Konsekuensinya, \texttt{docker compose up --build} berhasil dijalankan \textbf{tanpa dataset Olist maupun kunci API} --- properti yang kami anggap wajib agar penilaian reprodusibilitas lokal berjalan tanpa hambatan. Seluruh commit mengikuti spesifikasi \textit{Conventional Commits}~\cite{convcommits}, dan repositori menyertakan \texttt{.env.example} sehingga tidak ada kredensial pada \textit{version control}.
+AEO menerapkan \textit{fallback} berlapis: setiap endpoint memeriksa keberadaan artefak model dan mengembalikan nilai demonstrasi berlabel \texttt{"source": "demo\_fallback"} bila belum tersedia; lapisan LLM memiliki template terstruktur; dan CP-SAT memakai kandidat terdefinisi sehingga rekomendasi selalu tersedia. Konsekuensinya, \texttt{docker compose up --build} berhasil dijalankan \textbf{tanpa dataset Olist maupun kunci API}: properti yang kami anggap wajib agar penilaian reprodusibilitas lokal berjalan tanpa hambatan. Seluruh commit mengikuti spesifikasi \textit{Conventional Commits}~\cite{convcommits}, dan repositori menyertakan \texttt{.env.example} sehingga tidak ada kredensial pada \textit{version control}.
 
 % ===========================================================
 \section{Business Value dan Tata Kelola}
 
-Bagian ini membahas kelayakan adopsi industri dan tata kelola AI --- dua aspek penentu apakah prototipe dapat menjadi sistem yang benar-benar dipakai.
+Bagian ini membahas kelayakan adopsi industri dan tata kelola AI: dua aspek penentu apakah prototipe dapat menjadi sistem yang benar-benar dipakai.
 
 \subsection{Model Bisnis}
 
@@ -753,7 +768,7 @@ AEO diposisikan sebagai \textbf{SaaS B2B berlangganan} dengan penetapan harga be
   \end{tabularx}
 \end{table}
 
-Struktur biayanya menguntungkan: mayoritas komputasi adalah inferensi \textit{gradient boosting} dan \textit{constraint solving} berskala kecil yang berjalan pada CPU biasa tanpa GPU. Biaya variabel terbesar justru pemanggilan LLM --- dan itu pun hanya pada endpoint penyajian yang memiliki \textit{fallback}, sehingga plafon biaya dapat ditetapkan tanpa mengorbankan fungsi inti.
+Struktur biayanya menguntungkan: mayoritas komputasi adalah inferensi \textit{gradient boosting} dan \textit{constraint solving} berskala kecil yang berjalan pada CPU biasa tanpa GPU. Biaya variabel terbesar justru pemanggilan LLM: dan itu pun hanya pada endpoint penyajian yang memiliki \textit{fallback}, sehingga plafon biaya dapat ditetapkan tanpa mengorbankan fungsi inti.
 
 \subsection{Analisis Kelayakan Adopsi Industri}
 
@@ -775,7 +790,7 @@ Pertanyaan penentu adopsi bukan ``apakah AI-nya canggih'', melainkan ``apakah ma
     \draw[ar] (b3) -- (b4); \draw[ar] (b4) -- (b5);
 
     \node[lbl, below=5mm of b3, text width=13cm]
-      {Seluruh komponen dihitung sistem pada saat inferensi --- bukan estimasi manual --- sehingga\\
+      {Seluruh komponen dihitung sistem pada saat inferensi: bukan estimasi manual: sehingga\\
        kelayakan dapat diaudit per kasus, bukan hanya diklaim secara agregat.};
   \end{tikzpicture}}
   \caption{Kerangka perhitungan manfaat bersih per eksepsi.}
@@ -784,7 +799,7 @@ Pertanyaan penentu adopsi bukan ``apakah AI-nya canggih'', melainkan ``apakah ma
 
 Tiga faktor mendukung kelayakan adopsi: \textbf{hambatan integrasi rendah} (data pesanan, pengiriman, ulasan sudah dimiliki setiap operator, tanpa sensor baru); \textbf{adopsi bertahap} (Tahap 1--2 dapat diaktifkan lebih dahulu sebagai peringatan, Tahap 3--4 menyusul); dan \textbf{risiko rendah struktural} (persetujuan manusia wajib, sehingga kegagalan model paling buruk hanya rekomendasi ditolak, bukan kerugian langsung).
 
-Hambatan nyata juga kami nyatakan: kualitas data adalah prasyarat mutlak. Organisasi tanpa pencatatan waktu pengiriman konsisten tidak memperoleh manfaat karena label SLA tak dapat dibentuk --- ini kriteria kualifikasi pelanggan, bukan masalah yang diselesaikan model.
+Hambatan nyata juga kami nyatakan: kualitas data adalah prasyarat mutlak. Organisasi tanpa pencatatan waktu pengiriman konsisten tidak memperoleh manfaat karena label SLA tak dapat dibentuk: ini kriteria kualifikasi pelanggan, bukan masalah yang diselesaikan model.
 
 \subsection{Tata Kelola AI dan Kepatuhan Regulasi}
 
@@ -794,13 +809,13 @@ Hambatan nyata juga kami nyatakan: kualitas data adalah prasyarat mutlak. Organi
   \resizebox{0.88\textwidth}{!}{%
   \begin{tikzpicture}[node distance=4mm]
     \node[nd, fill=accentgreen!14, draw=accentgreen!70, minimum width=12.4cm] (l4)
-      {\textbf{Lapisan 4 --- Akuntabilitas} \quad jejak audit setiap keputusan: waktu, opsi, operator, dampak};
+      {\textbf{Lapisan 4: Akuntabilitas} \quad jejak audit setiap keputusan: waktu, opsi, operator, dampak};
     \node[nd, fill=accentgreen!11, draw=accentgreen!60, minimum width=12.4cm, below=4mm of l4] (l3)
-      {\textbf{Lapisan 3 --- Kendali Manusia} \quad tidak ada aksi tak-terbalikkan tanpa persetujuan eksplisit};
+      {\textbf{Lapisan 3: Kendali Manusia} \quad tidak ada aksi tak-terbalikkan tanpa persetujuan eksplisit};
     \node[nd, fill=accentgreen!8, draw=accentgreen!50, minimum width=12.4cm, below=4mm of l3] (l2)
-      {\textbf{Lapisan 2 --- Transparansi} \quad penjelasan per rekomendasi; label sumber \texttt{model} vs \texttt{fallback}};
+      {\textbf{Lapisan 2: Transparansi} \quad penjelasan per rekomendasi; label sumber \texttt{model} vs \texttt{fallback}};
     \node[nd, fill=softgrey, minimum width=12.4cm, below=4mm of l2] (l1)
-      {\textbf{Lapisan 1 --- Perlindungan Data} \quad minimisasi data, tanpa PII pada fitur model, kredensial di luar repositori};
+      {\textbf{Lapisan 1: Perlindungan Data} \quad minimisasi data, tanpa PII pada fitur model, kredensial di luar repositori};
 
     \node[lbl, left=3mm of l4, rotate=90, anchor=south] {};
   \end{tikzpicture}}
@@ -813,16 +828,16 @@ Hambatan nyata juga kami nyatakan: kualitas data adalah prasyarat mutlak. Organi
 AEO dirancang selaras dengan \textbf{UU No.~27 Tahun 2022 tentang Pelindungan Data Pribadi}~\cite{uupdp} melalui tiga keputusan teknis yang konkret:
 
 \begin{itemize}
-  \item \textbf{Minimisasi data.} Fitur model hanya memuat besaran agregat dan turunan perilaku (\texttt{order\_count}, \texttt{total\_spend}, \texttt{avg\_review}, \texttt{clv\_score}). Tidak ada nama, alamat, nomor telepon, maupun surel yang masuk ke dalam fitur model --- identitas pelanggan tidak diperlukan untuk memprediksi risiko churn.
+  \item \textbf{Minimisasi data.} Fitur model hanya memuat besaran agregat dan turunan perilaku (\texttt{order\_count}, \texttt{total\_spend}, \texttt{avg\_review}, \texttt{clv\_score}). Tidak ada nama, alamat, nomor telepon, maupun surel yang masuk ke dalam fitur model: identitas pelanggan tidak diperlukan untuk memprediksi risiko churn.
   \item \textbf{Pemisahan personalisasi dari inferensi.} Pesan pelanggan dihasilkan dengan \textit{placeholder} nama, bukan dengan mengirimkan identitas pelanggan ke layanan LLM eksternal. Penggabungan nama terjadi di sisi pengirim, setelah teks kembali.
   \item \textbf{Pengelolaan kredensial.} Kunci API dibaca dari variabel lingkungan; repositori hanya memuat \texttt{.env.example}.
 \end{itemize}
 
 \subsubsection{Klasifikasi Risiko dan Standar Internasional}
 
-Merujuk kerangka klasifikasi risiko \textbf{EU AI Act}~\cite{euaiact}, AEO tergolong sistem \textbf{risiko terbatas}: ia menghasilkan rekomendasi operasional bagi pengguna profesional, tidak melakukan penilaian terhadap hak individu, tidak digunakan untuk keputusan kepegawaian, kredit, maupun penegakan hukum. Kewajiban utama pada kategori ini adalah transparansi --- pengguna harus mengetahui bahwa mereka berinteraksi dengan sistem AI dan memahami dasar keluarannya. Kewajiban ini dipenuhi lewat Lapisan 2 dan 3 pada Gambar~\ref{fig:gov}.
+Merujuk kerangka klasifikasi risiko \textbf{EU AI Act}~\cite{euaiact}, AEO tergolong sistem \textbf{risiko terbatas}: ia menghasilkan rekomendasi operasional bagi pengguna profesional, tidak melakukan penilaian terhadap hak individu, tidak digunakan untuk keputusan kepegawaian, kredit, maupun penegakan hukum. Kewajiban utama pada kategori ini adalah transparansi: pengguna harus mengetahui bahwa mereka berinteraksi dengan sistem AI dan memahami dasar keluarannya. Kewajiban ini dipenuhi lewat Lapisan 2 dan 3 pada Gambar~\ref{fig:gov}.
 
-Praktik yang kami terapkan juga selaras dengan fungsi inti \textbf{NIST AI Risk Management Framework}~\cite{nist} --- \textit{Govern, Map, Measure, Manage} --- serta prinsip sistem manajemen AI pada \textbf{ISO/IEC 42001:2023}~\cite{iso42001}. Kami tidak mengklaim sertifikasi; yang kami klaim adalah bahwa arsitektur ini tidak memerlukan perombakan untuk menuju kepatuhan, karena jejak audit dan kendali manusia sudah menjadi bagian desain sejak awal, bukan tambalan.
+Praktik yang kami terapkan juga selaras dengan fungsi inti \textbf{NIST AI Risk Management Framework}~\cite{nist}: \textit{Govern, Map, Measure, Manage}: serta prinsip sistem manajemen AI pada \textbf{ISO/IEC 42001:2023}~\cite{iso42001}. Kami tidak mengklaim sertifikasi; yang kami klaim adalah bahwa arsitektur ini tidak memerlukan perombakan untuk menuju kepatuhan, karena jejak audit dan kendali manusia sudah menjadi bagian desain sejak awal, bukan tambalan.
 
 \subsubsection{Etika dan Sistem Cerdas yang Bertanggung Jawab}
 
@@ -843,7 +858,7 @@ Tiga risiko etis kami identifikasi secara terbuka beserta mitigasinya:
       & Skor keandalan dinormalisasi terhadap riwayat pemasok itu sendiri, bukan terhadap populasi. Rekomendasi pemasok cadangan bersifat usulan, selalu memerlukan persetujuan manusia. \\[1.5pt]
     Eksploitasi harga saat gangguan
       & \textit{Dynamic pricing} berpotensi menaikkan harga berlebihan ketika pasokan langka.
-      & Batas keras 2\% tertanam di kode, bukan sekadar kebijakan tertulis --- kenaikan di atas itu secara teknis tidak dapat dihasilkan sistem. \\
+      & Batas keras 2\% tertanam di kode, bukan sekadar kebijakan tertulis: kenaikan di atas itu secara teknis tidak dapat dihasilkan sistem. \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -853,7 +868,7 @@ Kami juga menegaskan batas peran sistem: AEO tidak mengambil keputusan pemutusan
 % ===========================================================
 \section{Proses Pengembangan Iteratif}
 
-Produk ini tidak dibangun sekali jadi. Bagian ini merekam keputusan yang berubah selama pengembangan beserta alasannya --- termasuk yang gagal.
+Produk ini tidak dibangun sekali jadi. Bagian ini merekam keputusan yang berubah selama pengembangan beserta alasannya: termasuk yang gagal.
 
 \begin{table}[H]
   \centering\footnotesize
@@ -884,7 +899,7 @@ Produk ini tidak dibangun sekali jadi. Bagian ini merekam keputusan yang berubah
   \end{tabularx}
 \end{table}
 
-Benang merah seluruh iterasi ini adalah prinsip yang baru kami rumuskan belakangan: \textbf{setiap komponen harus punya satu tanggung jawab yang dapat diverifikasi}. Ketika prinsip ini kami langgar --- terutama saat membiarkan LLM merekomendasikan aksi --- sistem menjadi tidak dapat diaudit dan kesalahan tidak dapat dilacak ke komponen mana pun.
+Benang merah seluruh iterasi ini adalah prinsip yang baru kami rumuskan belakangan: \textbf{setiap komponen harus punya satu tanggung jawab yang dapat diverifikasi}. Ketika prinsip ini kami langgar: terutama saat membiarkan LLM merekomendasikan aksi: sistem menjadi tidak dapat diaudit dan kesalahan tidak dapat dilacak ke komponen mana pun.
 
 % ===========================================================
 \section{Ruang Lingkup MVP, Keterbatasan, dan Rencana Pengembangan}
@@ -920,9 +935,9 @@ Kejujuran mengenai keterbatasan kami nilai lebih berguna bagi evaluasi daripada 
 \begin{enumerate}
   \item \textbf{Kesenjangan domain dataset.} Model dilatih pada data Brasil; pola statistiknya universal, tetapi kalibrasi absolut kerugian belum tervalidasi terhadap operasi Indonesia. \textit{Keterbatasan paling material dari keseluruhan sistem.}
 
-  \item \textbf{Metrik evaluasi kuantitatif belum dilaporkan di proposal ini.} \texttt{train.py} mencetak AUC/MAE validasi ke konsol saat pelatihan, tetapi kami sengaja tidak mencantumkan angka tersebut di sini karena belum melalui proses validasi silang yang kami anggap cukup ketat untuk diklaim sebagai hasil final --- melaporkan angka mentah berisiko menyesatkan alih-alih informatif. Pelaporan metrik terkurasi dijadwalkan sebagai item pertama \textit{Rencana Pengembangan} (Tabel~\ref{tab:roadmap}).
+  \item \textbf{Metrik evaluasi kuantitatif belum dilaporkan di proposal ini.} \texttt{train.py} mencetak AUC/MAE validasi ke konsol saat pelatihan, tetapi kami sengaja tidak mencantumkan angka tersebut di sini karena belum melalui proses validasi silang yang kami anggap cukup ketat untuk diklaim sebagai hasil final: melaporkan angka mentah berisiko menyesatkan alih-alih informatif. Pelaporan metrik terkurasi dijadwalkan sebagai item pertama \textit{Rencana Pengembangan} (Tabel~\ref{tab:roadmap}).
 
-  \item \textbf{Label churn bersifat proksi.} Label dibentuk dari ulasan dan keterlambatan, bukan pembelian ulang teramati --- berkorelasi dengan churn, tidak identik.
+  \item \textbf{Label churn bersifat proksi.} Label dibentuk dari ulasan dan keterlambatan, bukan pembelian ulang teramati: berkorelasi dengan churn, tidak identik.
 
   \item \textbf{Ruang kandidat pemulihan statis.} Tiga kandidat per jenis eksepsi didefinisikan sebelumnya; solver menjamin optimalitas atas himpunan tersebut, bukan seluruh kemungkinan aksi.
 
@@ -955,11 +970,11 @@ Arsitektur berlapis memungkinkan pengembangan berikut dilakukan \textbf{tanpa pe
 % ===========================================================
 \section{Kesimpulan}
 
-AEO (AI Exception Orchestrator) menjawab kesenjangan operasional nyata: bukan kekurangan data pada rantai pasok \textit{e-commerce}, melainkan ketiadaan jembatan dari sinyal menuju keputusan. Sistem ini menunjukkan AI dapat dipakai bukan sekadar menganalisis data historis, melainkan untuk \textbf{mengorkestrasikan respons} --- mendeteksi, mengkuantifikasi dalam rupiah, mengoptimasi pemulihan, dan memitigasi dampak pelanggan sebagai satu alur utuh.
+AEO (AI Exception Orchestrator) menjawab kesenjangan operasional nyata: bukan kekurangan data pada rantai pasok \textit{e-commerce}, melainkan ketiadaan jembatan dari sinyal menuju keputusan. Sistem ini menunjukkan AI dapat dipakai bukan sekadar menganalisis data historis, melainkan untuk \textbf{mengorkestrasikan respons}: mendeteksi, mengkuantifikasi dalam rupiah, mengoptimasi pemulihan, dan memitigasi dampak pelanggan sebagai satu alur utuh.
 
-Tiga hal membedakannya dari sistem pemantauan yang ada: ia berhenti bukan pada notifikasi melainkan pada opsi aksi terurut disertai angka kerugian; pemilihan aksi terbukti optimal secara matematis atas kandidat yang layak, bukan penalaran heuristik; dan setiap keputusan dapat dijelaskan, memerlukan persetujuan manusia, serta tercatat untuk audit. Pemisahan tanggung jawab yang kami tegakkan setelah beberapa iterasi --- \textbf{solver menghitung, LLM menjelaskan, manusia memutuskan} --- bukan sekadar pilihan arsitektur, melainkan prasyarat agar sistem dapat diaudit, dan karenanya dapat dipercaya pada operasi sesungguhnya.
+Tiga hal membedakannya dari sistem pemantauan yang ada: ia berhenti bukan pada notifikasi melainkan pada opsi aksi terurut disertai angka kerugian; pemilihan aksi terbukti optimal secara matematis atas kandidat yang layak, bukan penalaran heuristik; dan setiap keputusan dapat dijelaskan, memerlukan persetujuan manusia, serta tercatat untuk audit. Pemisahan tanggung jawab yang kami tegakkan setelah beberapa iterasi: \textbf{solver menghitung, LLM menjelaskan, manusia memutuskan}: bukan sekadar pilihan arsitektur, melainkan prasyarat agar sistem dapat diaudit, dan karenanya dapat dipercaya pada operasi sesungguhnya.
 
-Keterbatasan yang masih ada --- kesenjangan domain dataset dan konstanta ekonomi yang belum terkalibrasi --- telah kami petakan beserta jalur perbaikannya, dan keduanya terlokalisasi pada lapisan parameter, bukan struktur sistem. Arsitektur ini siap dikembangkan pada babak final tanpa perombakan menyeluruh, sejalan dengan tema \textit{``AI for the Backbone of the Economy''}: rantai pasok tangguh adalah tulang punggung ekonomi digital.
+Keterbatasan yang masih ada: kesenjangan domain dataset dan konstanta ekonomi yang belum terkalibrasi: telah kami petakan beserta jalur perbaikannya, dan keduanya terlokalisasi pada lapisan parameter, bukan struktur sistem. Arsitektur ini siap dikembangkan pada babak final tanpa perombakan menyeluruh, sejalan dengan tema \textit{``AI for the Backbone of the Economy''}: rantai pasok tangguh adalah tulang punggung ekonomi digital.
 
 \begin{flushright}\setstretch{0.92}
   \textit{Agustus 2026}\\[4pt]
@@ -1048,7 +1063,7 @@ European Union. \textit{Regulation (EU) 2024/1689 laying down harmonised rules o
 National Institute of Standards and Technology. \textit{AI Risk Management Framework (AI RMF 1.0)}. NIST, 2023.
 
 \bibitem{iso42001}
-International Organization for Standardization. \textit{ISO/IEC 42001:2023 --- Information technology --- Artificial intelligence --- Management system}.
+International Organization for Standardization. \textit{ISO/IEC 42001:2023: Information technology: Artificial intelligence: Management system}.
 
 \end{thebibliography}
 
