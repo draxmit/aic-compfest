@@ -34,6 +34,7 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{tabularx}
+\usepackage{longtable}
 \usepackage{array}
 \usepackage{multirow}
 
@@ -697,46 +698,47 @@ Pemisahan pada Gambar~\ref{fig:arch} bukan sekadar penataan berkas: model dapat 
 
 \subsubsection{Skema Request dan Response per Endpoint}
 
-\begin{table}[H]
-  \centering\footnotesize
-  \caption{Skema request dan response endpoint model utama}
-  \begin{tabularx}{\textwidth}{L{3.6cm} Y Y}
-    \toprule
-    \textbf{Endpoint} & \textbf{Request Body Fields} & \textbf{Response Fields} \\
-    \midrule
-    \texttt{POST /api/detect}
-      & \texttt{exception\_type} (supplier\_delay \textbar{} demand\_spike \textbar{} shipment\_delay);
-        \textit{demand}: \texttt{order\_count}, \texttt{rolling\_mean}, \texttt{rolling\_std};
-        \textit{supplier}: \texttt{predicted\_delay\_hours}, \texttt{historical\_mean\_days}, \texttt{historical\_std\_days}, \texttt{supplier\_reliability};
-        \textit{shipment}: \texttt{carrier\_delay\_days}, \texttt{item\_count}, \texttt{order\_value}
-      & \texttt{anomaly\_score} [0--1], \texttt{z\_score}, \texttt{is\_anomaly}, \texttt{severity} (critical/high/medium), \texttt{confidence}, \texttt{source} \\
-    \addlinespace[4pt]
-    \texttt{POST /api/impact}
-      & \texttt{exception\_type}, \texttt{delay\_days}, \texttt{carrier\_delay\_days}, \texttt{item\_count}, \texttt{order\_value}, \texttt{purchase\_hour}, \texttt{purchase\_dow}, \texttt{purchase\_month}, \texttt{affected\_orders}, \texttt{scale\_factor}
-      & \texttt{sla\_breach\_prob} [0--1], \texttt{expected\_loss\_idr} (Rp), \texttt{affected\_orders}, \texttt{source} \\
-    \addlinespace[4pt]
-    \texttt{POST /api/optimize}
-      & \texttt{exception\_type}, \texttt{required\_units}, \texttt{baseline\_loss}, \texttt{sla\_penalty\_per\_unit}, \texttt{delay\_hours}, \texttt{inventory\_cover\_days}, \texttt{affected\_orders}
-      & \texttt{options[]} setiap elemen: \texttt{id}, \texttt{label}, \texttt{summary}, \texttt{expected\_loss\_idr}, \texttt{sla\_risk}, \texttt{lead\_time\_hours}, \texttt{extra\_cost\_idr}, \texttt{feasibility} [0--1], \texttt{recommended} (bool); metadata: \texttt{objective}, \texttt{solver} \\
-    \addlinespace[4pt]
-    \texttt{POST /api/acm}
-      & \texttt{sla\_breach\_prob}, \texttt{affected\_customers}, \texttt{avg\_clv\_score}, \texttt{high\_clv\_count}, \texttt{exception\_type}, \texttt{delay\_hours}
-      & \texttt{churn\_probability}, \texttt{customers\_at\_risk}, \texttt{high\_clv\_customers}, \texttt{voucher\_amount\_idr}, \texttt{total\_intervention\_cost\_idr}, \texttt{churn\_cost\_without\_action\_idr}, \texttt{net\_benefit\_idr}, \texttt{dynamic\_pricing\_uplift\_pct}, \texttt{recommended\_action} \\
-    \addlinespace[4pt]
-    \texttt{POST /api/explain}
-      & \texttt{exception\_type}, \texttt{recommended\_label}, \texttt{recommended\_loss\_idr}, \texttt{baseline\_loss\_idr}, \texttt{sla\_risk}, \texttt{lead\_time\_hours}, \texttt{affected\_orders}, \texttt{top\_drivers[]}
-      & \texttt{bullets[]} (3 kalimat), \texttt{source} (gemini/template), \texttt{model} \\
-    \addlinespace[4pt]
-    \texttt{POST /api/acm/message}
-      & \texttt{exception\_type}, \texttt{delay\_hours}, \texttt{voucher\_amount\_idr}, \texttt{customer\_segment}
-      & \texttt{message} (Bahasa Indonesia), \texttt{source}, \texttt{language}, \texttt{voucher\_idr} \\
-    \addlinespace[4pt]
-    \texttt{POST /api/market-sentiment}
-      & \texttt{exception\_type}, \texttt{severity}
-      & \texttt{scope} (local/industry-wide), \texttt{summary}, \texttt{source}, \texttt{model} \\
-    \bottomrule
-  \end{tabularx}
-\end{table}
+\footnotesize
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.5cm}
+                  >{\raggedright\arraybackslash}p{5.6cm}
+                  >{\raggedright\arraybackslash}p{5.0cm}}
+  \caption{Skema request dan response endpoint model utama} \label{tab:api-detail} \\
+  \toprule
+  \textbf{Endpoint} & \textbf{Request Body Fields} & \textbf{Response Fields} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Endpoint} & \textbf{Request Body Fields} & \textbf{Response Fields} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  \texttt{POST /api/detect}
+    & \texttt{exception\_type} (supplier\_delay \textbar{} demand\_spike \textbar{} shipment\_delay);
+      \textit{demand}: \texttt{order\_count}, \texttt{rolling\_mean}, \texttt{rolling\_std};
+      \textit{supplier}: \texttt{predicted\_delay\_hours}, \texttt{historical\_mean\_days}, \texttt{historical\_std\_days}, \texttt{supplier\_reliability};
+      \textit{shipment}: \texttt{carrier\_delay\_days}, \texttt{item\_count}, \texttt{order\_value}
+    & \texttt{anomaly\_score} [0--1], \texttt{z\_score}, \texttt{is\_anomaly}, \texttt{severity} (critical/high/medium), \texttt{confidence}, \texttt{source} \\[4pt]
+  \texttt{POST /api/impact}
+    & \texttt{exception\_type}, \texttt{delay\_days}, \texttt{carrier\_delay\_days}, \texttt{item\_count}, \texttt{order\_value}, \texttt{purchase\_hour}, \texttt{purchase\_dow}, \texttt{purchase\_month}, \texttt{affected\_orders}, \texttt{scale\_factor}
+    & \texttt{sla\_breach\_prob} [0--1], \texttt{expected\_loss\_idr} (Rp), \texttt{affected\_orders}, \texttt{source} \\[4pt]
+  \texttt{POST /api/optimize}
+    & \texttt{exception\_type}, \texttt{required\_units}, \texttt{baseline\_loss}, \texttt{sla\_penalty\_per\_unit}, \texttt{delay\_hours}, \texttt{inventory\_cover\_days}, \texttt{affected\_orders}
+    & \texttt{options[]} setiap elemen: \texttt{id}, \texttt{label}, \texttt{summary}, \texttt{expected\_loss\_idr}, \texttt{sla\_risk}, \texttt{lead\_time\_hours}, \texttt{extra\_cost\_idr}, \texttt{feasibility} [0--1], \texttt{recommended} (bool); metadata: \texttt{objective}, \texttt{solver} \\[4pt]
+  \texttt{POST /api/acm}
+    & \texttt{sla\_breach\_prob}, \texttt{affected\_customers}, \texttt{avg\_clv\_score}, \texttt{high\_clv\_count}, \texttt{exception\_type}, \texttt{delay\_hours}
+    & \texttt{churn\_probability}, \texttt{customers\_at\_risk}, \texttt{high\_clv\_customers}, \texttt{voucher\_amount\_idr}, \texttt{total\_intervention\_cost\_idr}, \texttt{churn\_cost\_without\_action\_idr}, \texttt{net\_benefit\_idr}, \texttt{dynamic\_pricing\_uplift\_pct}, \texttt{recommended\_action} \\[4pt]
+  \texttt{POST /api/explain}
+    & \texttt{exception\_type}, \texttt{recommended\_label}, \texttt{recommended\_loss\_idr}, \texttt{baseline\_loss\_idr}, \texttt{sla\_risk}, \texttt{lead\_time\_hours}, \texttt{affected\_orders}, \texttt{top\_drivers[]}
+    & \texttt{bullets[]} (3 kalimat), \texttt{source} (gemini/template), \texttt{model} \\[4pt]
+  \texttt{POST /api/acm/message}
+    & \texttt{exception\_type}, \texttt{delay\_hours}, \texttt{voucher\_amount\_idr}, \texttt{customer\_segment}
+    & \texttt{message} (Bahasa Indonesia), \texttt{source}, \texttt{language}, \texttt{voucher\_idr} \\[4pt]
+  \texttt{POST /api/market-sentiment}
+    & \texttt{exception\_type}, \texttt{severity}
+    & \texttt{scope} (local/industry-wide), \texttt{summary}, \texttt{source}, \texttt{model} \\
+\end{longtable}
+\normalsize
 
 % ===========================================================
 \section{Metode Pendukung Pengambilan Keputusan}
