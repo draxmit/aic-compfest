@@ -424,7 +424,7 @@ Setiap pilihan algoritma diambil melalui pertimbangan eksplisit terhadap alterna
       & \textit{Autoencoder}/LSTM ditolak: sejalan dengan tinjauan Chandola dkk.~\cite{chandola}, keunggulannya baru terasa pada data berdimensi sangat tinggi, bukan tabel fitur beragregasi seperti milik kami. Isolation Forest dipilih karena tidak memerlukan label anomali --- kritis, karena label eksepsi tidak tersedia --- dan isolasi rekursifnya lebih efisien dibanding pendekatan berbasis jarak/kepadatan~\cite{iforest}. \\[1.5pt]
     Kuantifikasi
       & LightGBM~\cite{lightgbm}
-      & Regresi linear ditolak: hubungan \texttt{delay\_days} terhadap kerugian tidak linear. \textit{Deep learning} ditolak: pada data tabular menengah, \textit{gradient boosting} umumnya unggul dengan biaya latih jauh lebih rendah~\cite{lightgbm}. LightGBM dipilih atas XGBoost~\cite{xgboost} karena \textit{histogram-based leaf-wise growth} lebih cepat pada fitur kategorikal berkardinalitas tinggi~\cite{lightgbm}. \\[1.5pt]
+      & Regresi linear ditolak: hubungan \texttt{delay\_days} terhadap kerugian tidak linear. \textit{Deep learning} ditolak: pada data tabular menengah, \textit{gradient boosting} umumnya unggul dengan biaya latih jauh lebih rendah~\cite{lightgbm}. LightGBM dipilih atas XGBoost~\cite{xgboost} karena dua teknik yang diklaim mempercepat pelatihan tanpa kehilangan akurasi berarti pada data tabular berukuran menengah seperti milik kami --- \textit{Gradient-based One-Side Sampling} (GOSS) dan \textit{Exclusive Feature Bundling} (EFB)~\cite{lightgbm}. \\[1.5pt]
     Optimasi
       & OR-Tools CP-SAT~\cite{ortools}
       & \textit{Greedy} ditolak: tidak menjamin optimalitas dan tidak menangani kendala kelayakan. \textit{Constraint programming}~\cite{wolsey} memberi \textbf{jaminan optimalitas} dengan kendala deklaratif yang mudah diperluas; CP-SAT memadukan \textit{constraint propagation} dengan SAT modern~\cite{ortools}. \\[1.5pt]
@@ -990,17 +990,20 @@ F.~F. Reichheld \& W.~E. Sasser Jr. ``Zero Defections: Quality Comes to Services
 \bibitem{gupta}
 S.~Gupta, D.~Hanssens, B.~Hardie, W.~Kahn, V.~Kumar, N.~Lin, N.~Ravishanker, \& S.~Sriram. ``Modeling Customer Lifetime Value.'' \textit{Journal of Service Research}, vol.~9, no.~2, 2006, hlm. 139--155.
 
+\bibitem{amershi}
+S.~Amershi, D.~Weld, M.~Vorvoreanu, A.~Fourney, B.~Nushi, P.~Collisson, J.~Suh, S.~Iqbal, P.~N. Bennett, K.~Inkpen, J.~Teevan, R.~Kikin-Gil, \& E.~Horvitz. ``Guidelines for Human-AI Interaction.'' \textit{Proceedings of the 2019 CHI Conference on Human Factors in Computing Systems}, 2019, hlm. 1--13.
+
 \bibitem{olist}
 Olist \& A.~Sionek. \textit{Brazilian E-Commerce Public Dataset by Olist}. Kaggle. \url{https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce}
-
-\bibitem{chandola}
-V.~Chandola, A.~Banerjee, \& V.~Kumar. ``Anomaly Detection: A Survey.'' \textit{ACM Computing Surveys}, vol.~41, no.~3, 2009, artikel~15.
 
 \bibitem{iforest}
 F.~T. Liu, K.~M. Ting, \& Z.-H. Zhou. ``Isolation Forest.'' \textit{Proceedings of the 8th IEEE International Conference on Data Mining (ICDM)}, 2008, hlm. 413--422.
 
 \bibitem{iforesttkdd}
 F.~T. Liu, K.~M. Ting, \& Z.-H. Zhou. ``Isolation-Based Anomaly Detection.'' \textit{ACM Transactions on Knowledge Discovery from Data (TKDD)}, vol.~6, no.~1, 2012, artikel~3.
+
+\bibitem{chandola}
+V.~Chandola, A.~Banerjee, \& V.~Kumar. ``Anomaly Detection: A Survey.'' \textit{ACM Computing Surveys}, vol.~41, no.~3, 2009, artikel~15.
 
 \bibitem{lightgbm}
 G.~Ke, Q.~Meng, T.~Finley, T.~Wang, W.~Chen, W.~Ma, Q.~Ye, \& T.-Y. Liu. ``LightGBM: A Highly Efficient Gradient Boosting Decision Tree.'' \textit{Advances in Neural Information Processing Systems (NeurIPS)}, 2017.
@@ -1028,9 +1031,6 @@ M.~T. Ribeiro, S.~Singh, \& C.~Guestrin. ``\,`Why Should I Trust You?': Explaini
 
 \bibitem{shap}
 S.~M. Lundberg \& S.-I. Lee. ``A Unified Approach to Interpreting Model Predictions.'' \textit{Advances in Neural Information Processing Systems (NeurIPS)}, 2017.
-
-\bibitem{amershi}
-S.~Amershi, D.~Weld, M.~Vorvoreanu, A.~Fourney, B.~Nushi, P.~Collisson, J.~Suh, S.~Iqbal, P.~N. Bennett, K.~Inkpen, J.~Teevan, R.~Kikin-Gil, \& E.~Horvitz. ``Guidelines for Human-AI Interaction.'' \textit{Proceedings of the 2019 CHI Conference on Human Factors in Computing Systems}, 2019, hlm. 1--13.
 
 \bibitem{convcommits}
 \textit{Conventional Commits Specification v1.0.0}. \url{https://www.conventionalcommits.org}
