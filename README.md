@@ -1,6 +1,6 @@
 # AEO — AI Exception Orchestrator
 
-**AI Innovation Challenge · COMPFEST 18 · Team cupuu (BINUS Data Science)**
+**AI Innovation Challenge · COMPFEST 18 · Team cupuu**
 
 > *"AI for the Backbone of the Economy"* — Smart Commerce & Smart Logistics
 
@@ -218,7 +218,7 @@ aic-compfest/
 
 ## Team
 
-**cupuu** — BINUS University
+**cupuu**
 
 - Frederick Allensius
 - Kang Nicholas Darren Nugroho
